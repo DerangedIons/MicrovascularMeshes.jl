@@ -54,5 +54,12 @@ Vessels are drawn as line segments colored by radius. Boundary nodes are highlig
 crimson for arteriole inlets, blue for the venule outlet, orange for the venule inlet, and
 gray for no-flow layers.
 
+For a complete runnable example, see [`examples/generate_and_plot.jl`](examples/generate_and_plot.jl) —
+it sets up its own environment and opens an interactive 3D window:
+
+```
+julia examples/generate_and_plot.jl
+```
+
 This is a Julia port of the idealized network generator from
 [`timokoch/dumux-cardiac`](https://github.com/timokoch/dumux-cardiac).
