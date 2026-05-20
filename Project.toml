@@ -1,0 +1,7 @@
+name = "IdealizedMicrovasculature"
+uuid = "24482bbe-ba31-482a-8f07-cc3ff0f9a9db"
+version = "0.1.0"
+authors = ["Kyle Beggs <beggskw@gmail.com>"]
+
+[compat]
+julia = "1"

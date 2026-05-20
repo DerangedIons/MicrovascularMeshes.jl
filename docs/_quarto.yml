@@ -1,0 +1,47 @@
+project:
+  type: book
+  output-dir: _site
+
+engines: ['julia']
+julia:
+  project: "."
+
+book:
+  title: "IdealizedMicrovasculature.jl"
+  search:
+    location: sidebar
+    keyboard-shortcut:
+      - "/"
+  navbar:
+    right:
+      - icon: star
+        href: https://github.com/DerangedIons/IdealizedMicrovasculature.jl/stargazers
+        text: "Star"
+      - icon: github
+        href: https://github.com/DerangedIons/IdealizedMicrovasculature.jl
+  chapters:
+    - part: "Docs"
+      chapters:
+        - index.qmd
+    - part: "API"
+      chapters:
+        - pages/api.qmd
+    - part: "Resources"
+      chapters:
+        - pages/coverage.qmd
+
+  page-footer:
+    center: "Built on __BUILD_DATE__"
+
+language:
+  search-text-placeholder: "Search  (/)"
+
+format:
+  html:
+    css: assets/styles.css
+    number-sections: false
+    theme:
+      - flatly
+      - assets/theme.scss
+    include-after-body:
+      - file: assets/_version-selector.html
