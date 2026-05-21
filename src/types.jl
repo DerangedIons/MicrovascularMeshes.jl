@@ -23,10 +23,16 @@ end
 #--------------------------------------------------------------------------------# NetworkConfig
 
 """
+    NetworkConfig{T}(; kwargs...)
     NetworkConfig(; kwargs...)
 
-Parameters controlling [`generate_network`](@ref). All keyword arguments have defaults
-matching the reference idealized network.
+Parameters controlling [`generate_network`](@ref), parametric over the floating-point
+element type `T` (default `Float64`). All keyword arguments have defaults matching the
+reference idealized network.
+
+Select a non-default precision through the type parameter, e.g.
+`NetworkConfig{Float32}(; num_fibers = 60)`. The bare `NetworkConfig(; kwargs...)` form
+always yields `NetworkConfig{Float64}` — it cannot infer `T` from the keywords.
 
 ### Keyword Arguments
 - `num_fibers`: target number of Voronoi seed cells; controls capillary mesh density.
@@ -43,47 +49,49 @@ matching the reference idealized network.
 ### Examples
 ```julia
 cfg = NetworkConfig(num_fibers = 60, num_layers = 25)
+cfg32 = NetworkConfig{Float32}(num_fibers = 60)
 ```
 """
-Base.@kwdef struct NetworkConfig
+Base.@kwdef struct NetworkConfig{T<:Real}
     num_fibers::Int = 40
-    region_size::Float64 = 200.0
-    random_perturbation::Float64 = 0.1
+    region_size::T = 200.0
+    random_perturbation::T = 0.1
     num_layers::Int = 20
-    layer_spacing_fraction::Float64 = 0.07
-    drop_fraction_hex_grid::Float64 = 0.7
-    radius_default_small_vessels::Float64 = 2.6
-    radius_stddev_small_vessels::Float64 = 0.15
-    scale_factor_venule::Float64 = 1.0
-    scale_factor_arteriole::Float64 = 0.7
+    layer_spacing_fraction::T = 0.07
+    drop_fraction_hex_grid::T = 0.7
+    radius_default_small_vessels::T = 2.6
+    radius_stddev_small_vessels::T = 0.15
+    scale_factor_venule::T = 1.0
+    scale_factor_arteriole::T = 0.7
 end
 
 #--------------------------------------------------------------------------------# VascularNetwork
 
 """
-    VascularNetwork
+    VascularNetwork{T}
 
-A 3D vascular network as a graph of line elements.
+A 3D vascular network as a graph of line elements, parametric over the floating-point
+element type `T`.
 
 ### Fields
-- `vertices`: node positions, one `SVector{3,Float64}` each.
+- `vertices`: node positions, one `SVector{3,T}` each.
 - `elements`: line elements, each an `SVector{2,Int}` of 1-based vertex indices.
 - `radii`: vessel radius per element; `length(radii) == length(elements)`.
 - `node_tags`: [`NodeTag`](@ref) per vertex; `length(node_tags) == length(vertices)`.
 - `bcvalues`: boundary-condition value per vertex (velocity or pressure, depending on the
   tag); `length(bcvalues) == length(vertices)`. Zero for interior nodes.
 """
-struct VascularNetwork
-    vertices::Vector{SVector{3,Float64}}
+struct VascularNetwork{T<:Real}
+    vertices::Vector{SVector{3,T}}
     elements::Vector{SVector{2,Int}}
-    radii::Vector{Float64}
+    radii::Vector{T}
     node_tags::Vector{NodeTag}
-    bcvalues::Vector{Float64}
+    bcvalues::Vector{T}
 end
 
-VascularNetwork() = VascularNetwork(
-    SVector{3,Float64}[], SVector{2,Int}[], Float64[], NodeTag[], Float64[]
-)
+VascularNetwork{T}() where {T<:Real} =
+    VascularNetwork{T}(SVector{3,T}[], SVector{2,Int}[], T[], NodeTag[], T[])
+VascularNetwork() = VascularNetwork{Float64}()
 
 "Number of vertices in the network."
 nvertices(net::VascularNetwork) = length(net.vertices)
@@ -97,10 +105,10 @@ nelements(net::VascularNetwork) = length(net.elements)
 Append a vertex at `position` (defaulting to an `Interior` tag and zero BC value) and
 return its 1-based index.
 """
-function add_vertex!(net::VascularNetwork, position::SVector{3,Float64})
+function add_vertex!(net::VascularNetwork{T}, position::SVector{3,<:Real}) where {T}
     push!(net.vertices, position)
     push!(net.node_tags, Interior)
-    push!(net.bcvalues, 0.0)
+    push!(net.bcvalues, zero(T))
     return length(net.vertices)
 end
 

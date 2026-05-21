@@ -6,6 +6,10 @@ function _arange(start::Real, stop::Real, step::Real)
     return [start + k * step for k in 0:n-1]
 end
 
+# Standard-normal draw converted to the element type `T`. One idiom for every `T`:
+# `randn(rng, T)` is undefined for non-`AbstractFloat` reals, `convert` is not.
+_randn(rng::AbstractRNG, ::Type{T}) where {T<:Real} = convert(T, randn(rng))
+
 """
     hex_grid_points(rng, cfg) -> (points, a)
 
@@ -16,27 +20,27 @@ Two interleaved rectangular grids form a hexagonal lattice covering
 cells are well defined). Every point is then perturbed by Gaussian noise with standard
 deviation `random_perturbation * a`.
 
-Returns the seed `points` as a `Vector{NTuple{2,Float64}}` and the grid pitch `a`.
+Returns the seed `points` as a `Vector{NTuple{2,T}}` and the grid pitch `a`.
 """
-function hex_grid_points(rng::AbstractRNG, cfg::NetworkConfig)
+function hex_grid_points(rng::AbstractRNG, cfg::NetworkConfig{T}) where {T}
     rs = cfg.region_size
-    a = rs / sqrt(3.0 / 2.0 * sqrt(3) * cfg.num_fibers)
+    a = rs / T(sqrt(3 / 2 * sqrt(3) * cfg.num_fibers))
 
     x = _arange(-a, rs + a, 3a)
-    y = _arange(-a, rs + a, sqrt(3) * a)
+    y = _arange(-a, rs + a, T(sqrt(3)) * a)
 
-    points = NTuple{2,Float64}[]
+    points = NTuple{2,T}[]
     for yi in y, xi in x
         push!(points, (xi, yi))
     end
-    for yi in y .+ sqrt(3) * a / 2, xi in x .+ 3a / 2
+    for yi in y .+ T(sqrt(3)) * a / 2, xi in x .+ 3a / 2
         push!(points, (xi, yi))
     end
 
     σ = cfg.random_perturbation * a
     for k in eachindex(points)
         px, py = points[k]
-        points[k] = (px + σ * randn(rng), py + σ * randn(rng))
+        points[k] = (px + σ * _randn(rng, T), py + σ * _randn(rng, T))
     end
     return points, a
 end
@@ -60,10 +64,14 @@ vary between runs even for identical input. The output is therefore canonicalize
 are sorted by coordinate and edges by endpoint, making the function a pure, reproducible
 mapping of `points` to a graph.
 
-Returns `vertices::Vector{SVector{2,Float64}}` and `edges::Vector{SVector{2,Int}}`.
+`DelaunayTriangulation.jl`'s robust geometric predicates only operate in `Float64`, so
+the tessellation runs there regardless of `T`; the extracted vertices are then converted
+back to `T`. The discrete graph (edges and vertex ordering) is `T`-independent anyway.
+
+Returns `vertices::Vector{SVector{2,T}}` and `edges::Vector{SVector{2,Int}}`.
 """
-function voronoi_network(points::Vector{NTuple{2,Float64}}, region_size::Real)
-    tess = DT.voronoi(DT.triangulate(points))
+function voronoi_network(points::Vector{NTuple{2,T}}, region_size::Real) where {T<:Real}
+    tess = DT.voronoi(DT.triangulate(NTuple{2,Float64}.(points)))
     polygon_points = DT.get_polygon_points(tess)
 
     edge_set = Set{Tuple{Int,Int}}()
@@ -80,11 +88,11 @@ function voronoi_network(points::Vector{NTuple{2,Float64}}, region_size::Real)
     end
 
     remap = Dict{Int,Int}()
-    vertices = SVector{2,Float64}[]
+    vertices = SVector{2,T}[]
     edges = SVector{2,Int}[]
     add_vertex(i) = get!(remap, i) do
         c = polygon_points[i]
-        push!(vertices, SVector{2,Float64}(c[1], c[2]))
+        push!(vertices, SVector{2,T}(c[1], c[2]))
         length(vertices)
     end
     for (p, q) in edge_set

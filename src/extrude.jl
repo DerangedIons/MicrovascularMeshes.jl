@@ -29,28 +29,28 @@ lognormally distributed radius.
 
 Returns the number of vertices per layer.
 """
-function extrude_capillary!(net::VascularNetwork, rng::AbstractRNG,
-                            vertices2d::Vector{SVector{2,Float64}},
+function extrude_capillary!(net::VascularNetwork{T}, rng::AbstractRNG,
+                            vertices2d::Vector{SVector{2,T}},
                             edges2d::Vector{SVector{2,Int}},
-                            a::Real, cfg::NetworkConfig)
+                            a::T, cfg::NetworkConfig{T}) where {T}
     nvpl = length(vertices2d)
     nlayers = cfg.num_layers
     dz = cfg.layer_spacing_fraction * cfg.region_size
 
-    base = [SVector{3,Float64}(v[1], v[2], 0.0) for v in vertices2d]
+    base = [SVector{3,T}(v[1], v[2], 0) for v in vertices2d]
     for p in base
         add_vertex!(net, p)
     end
 
-    σxy = 0.1 * a
-    σz = 0.005 * cfg.region_size
+    σxy = T(0.1) * a
+    σz = T(0.005) * cfg.region_size
     for layer in 1:nlayers-1
         z_offset = layer * dz
         perturb = layer != nlayers - 1
         for p in base
-            q = SVector{3,Float64}(p[1], p[2], p[3] + z_offset)
+            q = SVector{3,T}(p[1], p[2], p[3] + z_offset)
             if perturb
-                q += SVector{3,Float64}(σxy * randn(rng), σxy * randn(rng), σz * randn(rng))
+                q += SVector{3,T}(σxy * _randn(rng, T), σxy * _randn(rng, T), σz * _randn(rng, T))
             end
             add_vertex!(net, q)
         end
@@ -58,7 +58,7 @@ function extrude_capillary!(net::VascularNetwork, rng::AbstractRNG,
 
     μ = log(cfg.radius_default_small_vessels)
     σ = cfg.radius_stddev_small_vessels
-    sample_radius() = exp(μ + σ * randn(rng))
+    sample_radius() = exp(μ + σ * _randn(rng, T))
 
     # Vertical elements connect a vertex to its copy in the next layer.
     for layer in 1:nlayers-1, i in 1:nvpl

@@ -23,48 +23,48 @@ net = generate_network(MersenneTwister(0))
 net = generate_network(NetworkConfig(num_fibers = 60))
 ```
 """
-function generate_network(rng::AbstractRNG, cfg::NetworkConfig=NetworkConfig())
+function generate_network(rng::AbstractRNG, cfg::NetworkConfig{T}=NetworkConfig()) where {T}
     points, a = hex_grid_points(rng, cfg)
     vertices2d, edges2d = voronoi_network(points, cfg.region_size)
 
-    net = VascularNetwork()
+    net = VascularNetwork{T}()
     nvpl = extrude_capillary!(net, rng, vertices2d, edges2d, a, cfg)
 
     top_offset = (cfg.num_layers - 1) * nvpl
     for i in 1:nvpl
-        set_bc!(net, i, NoFlow, 0.0)
-        set_bc!(net, top_offset + i, NoFlow, 0.0)
+        set_bc!(net, i, NoFlow, 0)
+        set_bc!(net, top_offset + i, NoFlow, 0)
     end
 
     connecting = Int[]
     add_venule!(net, rng, cfg, a, connecting)
 
     dz = cfg.layer_spacing_fraction * cfg.region_size
-    span = cfg.num_layers * dz - 5.0
+    span = cfg.num_layers * dz - T(5)
     sf = cfg.scale_factor_arteriole
 
     add_arteriole!(net, rng, cfg, connecting;
-        start=2 .* SVector{3,Float64}(70.0, 115.0, 0.5 * 0.2 * span),
-        finish=2 .* SVector{3,Float64}(70.0, 105.0, 0.5 * 0.3 * span),
-        trunk_radius=13.0 * sf,
-        o1=2 .* SVector{3,Float64}(0.0, -2.0, 20.0),
-        o2=2 .* SVector{3,Float64}(-15.0, -2.0, 20.0),
-        o11=2 .* SVector{3,Float64}(0.0, -2.0, 20.0),
-        o12=2 .* SVector{3,Float64}(15.0, -2.0, 10.0),
-        o21=2 .* SVector{3,Float64}(-15.0, -2.0, 20.0),
-        o22=2 .* SVector{3,Float64}(-25.0, -2.0, -30.0),
+        start=2 .* SVector{3,T}(70, 115, 0.5 * 0.2 * span),
+        finish=2 .* SVector{3,T}(70, 105, 0.5 * 0.3 * span),
+        trunk_radius=T(13) * sf,
+        o1=2 .* SVector{3,T}(0, -2, 20),
+        o2=2 .* SVector{3,T}(-15, -2, 20),
+        o11=2 .* SVector{3,T}(0, -2, 20),
+        o12=2 .* SVector{3,T}(15, -2, 10),
+        o21=2 .* SVector{3,T}(-15, -2, 20),
+        o22=2 .* SVector{3,T}(-25, -2, -30),
         exclude_count=8)
 
     add_arteriole!(net, rng, cfg, connecting;
-        start=2 .* SVector{3,Float64}(-15.0, 70.0, 0.5 * 0.8 * span),
-        finish=2 .* SVector{3,Float64}(-5.0, 70.0, 0.5 * 0.7 * span),
-        trunk_radius=12.0 * sf,
-        o1=2 .* SVector{3,Float64}(-2.0, -10.0, -20.0),
-        o2=2 .* SVector{3,Float64}(-2.0, 0.0, -20.0),
-        o11=2 .* SVector{3,Float64}(-2.0, -10.0, -20.0),
-        o12=2 .* SVector{3,Float64}(2.0, -30.0, 30.0),
-        o21=2 .* SVector{3,Float64}(-2.0, 0.0, -20.0),
-        o22=2 .* SVector{3,Float64}(-2.0, 20.0, -10.0),
+        start=2 .* SVector{3,T}(-15, 70, 0.5 * 0.8 * span),
+        finish=2 .* SVector{3,T}(-5, 70, 0.5 * 0.7 * span),
+        trunk_radius=T(12) * sf,
+        o1=2 .* SVector{3,T}(-2, -10, -20),
+        o2=2 .* SVector{3,T}(-2, 0, -20),
+        o11=2 .* SVector{3,T}(-2, -10, -20),
+        o12=2 .* SVector{3,T}(2, -30, 30),
+        o21=2 .* SVector{3,T}(-2, 0, -20),
+        o22=2 .* SVector{3,T}(-2, 20, -10),
         exclude_count=16)
 
     enforce_min_radius!(net, connecting, cfg)
