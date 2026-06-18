@@ -21,6 +21,10 @@ The network is built in four stages:
 The result is a [`VascularNetwork`](src/types.jl): vertices, line elements, per-element
 radii, and per-vertex boundary tags and values.
 
+The bounding region is set by `cfg.domain`: the default [`Cube`](src/domains.jl) gives the
+square-footprint slab above, while [`HalfSphere`](src/domains.jl) fills a solid hemisphere
+of radius `sphere_radius` whose feeding/draining vessels pierce the curved dome surface.
+
 ## Usage
 
 ```julia
@@ -32,6 +36,9 @@ net = generate_network(MersenneTwister(0))
 
 # tune the generator
 net = generate_network(MersenneTwister(0), NetworkConfig(num_fibers = 60, num_layers = 25))
+
+# generate the bed inside a half-sphere instead of a cube
+net = generate_network(MersenneTwister(0), NetworkConfig(domain = HalfSphere(), sphere_radius = 120.0))
 
 nvertices(net)   # number of nodes
 nelements(net)   # number of vessel segments

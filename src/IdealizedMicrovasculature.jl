@@ -6,14 +6,17 @@ using StaticArrays: SVector
 import DelaunayTriangulation as DT
 
 export NodeTag, Interior, NoFlow, Inlet, Outlet, InletVenule
+export AbstractDomain, Cube, HalfSphere
 export NetworkConfig, VascularNetwork, generate_network
 export nvertices, nelements
 export plotnetwork, plotnetwork!
 
+include("domains.jl")
 include("types.jl")
 include("voronoi.jl")
 include("extrude.jl")
 include("trees.jl")
+include("prune.jl")
 include("generate.jl")
 
 """

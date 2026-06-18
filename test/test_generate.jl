@@ -30,6 +30,7 @@ end
     @test all(e -> 1 <= e[1] <= nvertices(net) && 1 <= e[2] <= nvertices(net), net.elements)
     @test all(isfinite, net.radii)
     @test all(>(0), net.radii)
+    @test ncomponents(net) == 1                         # no disconnected capillaries
 
     @test count(==(Inlet), net.node_tags) == 2          # two arterioles
     @test count(==(Outlet), net.node_tags) == 1         # one venule

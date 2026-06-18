@@ -36,20 +36,26 @@ always yields `NetworkConfig{Float64}` — it cannot infer `T` from the keywords
 
 ### Keyword Arguments
 - `num_fibers`: target number of Voronoi seed cells; controls capillary mesh density.
-- `region_size`: side length of the square region the capillary mesh covers.
+- `region_size`: side length of the square region the capillary mesh covers (`Cube`).
 - `random_perturbation`: stddev of the hex-grid jitter, as a fraction of the grid pitch.
-- `num_layers`: number of stacked layers the planar mesh is extruded into.
-- `layer_spacing_fraction`: spacing between extrusion layers, as a fraction of `region_size`.
+- `num_layers`: number of stacked layers the planar mesh is extruded into. On
+  [`HalfSphere`](@ref) this is an upper bound; the effective count is geometry-limited.
+- `layer_spacing_fraction`: spacing between extrusion layers, as a fraction of the
+  domain's characteristic size (`region_size` for `Cube`, `sphere_radius` for `HalfSphere`).
 - `drop_fraction_hex_grid`: fraction of horizontal (inter-layer) edges dropped per layer.
 - `radius_default_small_vessels`: median capillary radius (lognormal location).
 - `radius_stddev_small_vessels`: lognormal shape parameter of the capillary radius.
 - `scale_factor_venule`: multiplies every venule radius.
 - `scale_factor_arteriole`: multiplies every arteriole radius.
+- `domain`: the bounding region, an [`AbstractDomain`](@ref) ([`Cube`](@ref) default or
+  [`HalfSphere`](@ref)); selects which construction [`generate_network`](@ref) runs.
+- `sphere_radius`: hemisphere radius `R`, used only on the [`HalfSphere`](@ref) domain.
 
 ### Examples
 ```julia
 cfg = NetworkConfig(num_fibers = 60, num_layers = 25)
 cfg32 = NetworkConfig{Float32}(num_fibers = 60)
+dome = NetworkConfig(domain = HalfSphere(), sphere_radius = 120.0)
 ```
 """
 Base.@kwdef struct NetworkConfig{T<:Real}
@@ -63,6 +69,8 @@ Base.@kwdef struct NetworkConfig{T<:Real}
     radius_stddev_small_vessels::T = 0.15
     scale_factor_venule::T = 1.0
     scale_factor_arteriole::T = 0.7
+    domain::AbstractDomain = Cube()
+    sphere_radius::T = 100.0
 end
 
 #--------------------------------------------------------------------------------# VascularNetwork

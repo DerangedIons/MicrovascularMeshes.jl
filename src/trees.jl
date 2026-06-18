@@ -25,21 +25,27 @@ end
 #--------------------------------------------------------------------------------# Venule
 
 """
-    add_venule!(net, rng, cfg, a, connecting)
+    add_venule!(net, rng, cfg, a, connecting; start, finish, tag_distal_inlet)
 
 Append the draining venule: a single chain of 11 vertices with a tapering radius, plus
 cross-links from every second vertex to the nearest capillary vertex.
 
-The first vertex is tagged [`Outlet`](@ref) (pressure boundary condition) and the last is
-tagged [`InletVenule`](@ref) (velocity boundary condition). The capillary vertices the
-cross-links attach to are appended to `connecting`.
+The first vertex is tagged [`Outlet`](@ref) (pressure boundary condition). The capillary
+vertices the cross-links attach to are appended to `connecting`.
+
+### Keyword Arguments
+- `start`, `finish`: trunk endpoints. Default to the `Cube` domain's placement; the
+  [`HalfSphere`](@ref) domain passes endpoints that pierce the curved surface.
+- `tag_distal_inlet`: when `true` (default), the deep end is tagged [`InletVenule`](@ref)
+  (a prescribed venous inflow). Set `false` for a single-outlet venule, leaving the deep
+  end an `Interior` capillary-end stub.
 """
 function add_venule!(net::VascularNetwork{T}, rng::AbstractRNG, cfg::NetworkConfig{T},
-                     a::T, connecting::Vector{Int}) where {T}
-    dz = cfg.layer_spacing_fraction * cfg.region_size
-    start = 2 .* SVector{3,T}(0, -5, 0)
-    finish = 2 .* SVector{3,T}(100, -5, 0.5 * cfg.num_layers * dz - 5)
-
+                     a::T, connecting::Vector{Int};
+                     start::SVector{3,T}=2 .* SVector{3,T}(0, -5, 0),
+                     finish::SVector{3,T}=2 .* SVector{3,T}(100, -5,
+                         0.5 * cfg.num_layers * (cfg.layer_spacing_fraction * cfg.region_size) - 5),
+                     tag_distal_inlet::Bool=true) where {T}
     nverts = 11
     base = nvertices(net) + 1
     capillary_count = nvertices(net)
@@ -51,7 +57,7 @@ function add_venule!(net::VascularNetwork{T}, rng::AbstractRNG, cfg::NetworkConf
     end
 
     set_bc!(net, base, Outlet, 2000)
-    set_bc!(net, base + nverts - 1, InletVenule, 1e-3)
+    tag_distal_inlet && set_bc!(net, base + nverts - 1, InletVenule, 1e-3)
 
     sf = cfg.scale_factor_venule
     venule_radius = T(20) * sf
