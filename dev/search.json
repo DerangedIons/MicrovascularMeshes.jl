@@ -1,0 +1,68 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "IdealizedMicrovasculature.jl",
+    "section": "",
+    "text": "Overview\nWelcome to the documentation for IdealizedMicrovasculature.jl.\nIdealizedMicrovasculature.jl is a Julia package that …",
+    "crumbs": [
+      "Docs",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>IdealizedMicrovasculature.jl</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#quickstart",
+    "href": "index.html#quickstart",
+    "title": "IdealizedMicrovasculature.jl",
+    "section": "Quickstart",
+    "text": "Quickstart\n\nprintln(\"Hello, World!\")\n\nHello, World!",
+    "crumbs": [
+      "Docs",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>IdealizedMicrovasculature.jl</span>"
+    ]
+  },
+  {
+    "objectID": "pages/api.html",
+    "href": "pages/api.html",
+    "title": "API",
+    "section": "",
+    "text": "Types",
+    "crumbs": [
+      "API",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>API</span>"
+    ]
+  },
+  {
+    "objectID": "pages/api.html#types",
+    "href": "pages/api.html#types",
+    "title": "API",
+    "section": "",
+    "text": "NetworkConfig\n\n\nNetworkConfig{T}(; kwargs...)\nNetworkConfig(; kwargs...)\nParameters controlling generate_network, parametric over the floating-point element type T (default Float64). All keyword arguments have defaults matching the reference idealized network.\nSelect a non-default precision through the type parameter, e.g. NetworkConfig{Float32}(; num_fibers = 60). The bare NetworkConfig(; kwargs...) form always yields NetworkConfig{Float64} — it cannot infer T from the keywords.\n\nKeyword Arguments\n\nnum_fibers: target number of Voronoi seed cells; controls capillary mesh density.\nregion_size: side length of the square region the capillary mesh covers.\nrandom_perturbation: stddev of the hex-grid jitter, as a fraction of the grid pitch.\nnum_layers: number of stacked layers the planar mesh is extruded into.\nlayer_spacing_fraction: spacing between extrusion layers, as a fraction of region_size.\ndrop_fraction_hex_grid: fraction of horizontal (inter-layer) edges dropped per layer.\nradius_default_small_vessels: median capillary radius (lognormal location).\nradius_stddev_small_vessels: lognormal shape parameter of the capillary radius.\nscale_factor_venule: multiplies every venule radius.\nscale_factor_arteriole: multiplies every arteriole radius.\n\n\n\nExamples\ncfg = NetworkConfig(num_fibers = 60, num_layers = 25)\ncfg32 = NetworkConfig{Float32}(num_fibers = 60)\n\n\n\n\n\nNodeTag\n\n\nNodeTag\nBoundary role of a network vertex. Determines whether (and what kind of) a boundary condition applies to the node.\n\nInterior — interior node, no boundary condition.\nNoFlow — no-flow boundary; assigned to the top and bottom extrusion layers.\nInlet — arteriole inflow node; carries a velocity boundary condition.\nOutlet — venule outflow node; carries a pressure boundary condition.\nInletVenule — venule inflow node; carries a velocity boundary condition.\n\n\n\n\n\nVascularNetwork\n\n\nVascularNetwork{T}\nA 3D vascular network as a graph of line elements, parametric over the floating-point element type T.\n\nFields\n\nvertices: node positions, one SVector{3,T} each.\nelements: line elements, each an SVector{2,Int} of 1-based vertex indices.\nradii: vessel radius per element; length(radii) == length(elements).\nnode_tags: NodeTag per vertex; length(node_tags) == length(vertices).\nbcvalues: boundary-condition value per vertex (velocity or pressure, depending on the tag); length(bcvalues) == length(vertices). Zero for interior nodes.",
+    "crumbs": [
+      "API",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>API</span>"
+    ]
+  },
+  {
+    "objectID": "pages/api.html#functions",
+    "href": "pages/api.html#functions",
+    "title": "API",
+    "section": "Functions",
+    "text": "Functions\n\n\ngenerate_network\n\n\ngenerate_network([rng], cfg = NetworkConfig()) -&gt; VascularNetwork\nGenerate a synthetic idealized myocardial microvascular network.\nThe construction proceeds in four stages:\n\nA jittered hexagonal point set is tessellated and the in-region Voronoi edges form a planar capillary graph.\nThat graph is extruded into a stacked 3D capillary mesh.\nThe top and bottom layers are tagged as no-flow boundaries.\nOne draining venule and two feeding arterioles are appended and connected to the capillary mesh; capillaries feeding the trees are widened.\n\nPass an rng for reproducible output.\n\nExamples\nusing Random\nnet = generate_network(MersenneTwister(0))\nnet = generate_network(NetworkConfig(num_fibers = 60))\n\n\n\n\n\nnelements\n\n\nNumber of line elements in the network.\n\n\n\n\nnvertices\n\n\nNumber of vertices in the network.\n\n\n\n\nplotnetwork\n\n\nplotnetwork(net; kwargs...) -&gt; Figure\nplotnetwork!(ax, net; kwargs...) -&gt; ax\nPlot a VascularNetwork in 3D: vessels as line segments colored by radius, and boundary nodes highlighted by NodeTag.\nThese functions are implemented by a package extension and require a Makie backend — load GLMakie (interactive) or CairoMakie (static) before calling them.\n\nKeyword Arguments\n\ncolormap: colormap for the vessel radii (default :viridis).\nlinewidth: vessel line width (default 1.5).\nshow_nodes: whether to scatter the boundary nodes (default true).\n\n\n\nExamples\nusing GLMakie, IdealizedMicrovasculature\nplotnetwork(generate_network())\n\n\n\n\n\nplotnetwork! {#plotnetwork!}\n\n\nNo documentation found for public binding IdealizedMicrovasculature.plotnetwork!.\nIdealizedMicrovasculature.plotnetwork! is a Function.\n# 0 methods for generic function \"plotnetwork!\" from IdealizedMicrovasculature",
+    "crumbs": [
+      "API",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>API</span>"
+    ]
+  },
+  {
+    "objectID": "pages/api.html#constants",
+    "href": "pages/api.html#constants",
+    "title": "API",
+    "section": "Constants",
+    "text": "Constants\n\n\nInlet\n\n\nNodeTag\nBoundary role of a network vertex. Determines whether (and what kind of) a boundary condition applies to the node.\n\nInterior — interior node, no boundary condition.\nNoFlow — no-flow boundary; assigned to the top and bottom extrusion layers.\nInlet — arteriole inflow node; carries a velocity boundary condition.\nOutlet — venule outflow node; carries a pressure boundary condition.\nInletVenule — venule inflow node; carries a velocity boundary condition.\n\n\n\n\n\nInletVenule\n\n\nNodeTag\nBoundary role of a network vertex. Determines whether (and what kind of) a boundary condition applies to the node.\n\nInterior — interior node, no boundary condition.\nNoFlow — no-flow boundary; assigned to the top and bottom extrusion layers.\nInlet — arteriole inflow node; carries a velocity boundary condition.\nOutlet — venule outflow node; carries a pressure boundary condition.\nInletVenule — venule inflow node; carries a velocity boundary condition.\n\n\n\n\n\nInterior\n\n\nNodeTag\nBoundary role of a network vertex. Determines whether (and what kind of) a boundary condition applies to the node.\n\nInterior — interior node, no boundary condition.\nNoFlow — no-flow boundary; assigned to the top and bottom extrusion layers.\nInlet — arteriole inflow node; carries a velocity boundary condition.\nOutlet — venule outflow node; carries a pressure boundary condition.\nInletVenule — venule inflow node; carries a velocity boundary condition.\n\n\n\n\n\nNoFlow\n\n\nNodeTag\nBoundary role of a network vertex. Determines whether (and what kind of) a boundary condition applies to the node.\n\nInterior — interior node, no boundary condition.\nNoFlow — no-flow boundary; assigned to the top and bottom extrusion layers.\nInlet — arteriole inflow node; carries a velocity boundary condition.\nOutlet — venule outflow node; carries a pressure boundary condition.\nInletVenule — venule inflow node; carries a velocity boundary condition.\n\n\n\n\n\nOutlet\n\n\nNodeTag\nBoundary role of a network vertex. Determines whether (and what kind of) a boundary condition applies to the node.\n\nInterior — interior node, no boundary condition.\nNoFlow — no-flow boundary; assigned to the top and bottom extrusion layers.\nInlet — arteriole inflow node; carries a velocity boundary condition.\nOutlet — venule outflow node; carries a pressure boundary condition.\nInletVenule — venule inflow node; carries a velocity boundary condition.",
+    "crumbs": [
+      "API",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>API</span>"
+    ]
+  }
+]
