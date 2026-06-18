@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2026-06-18 16:31:05</td>
+            <td class="headerValue">2026-06-18 21:36:20</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">-</td>
@@ -98,93 +98,101 @@
 <span id="L36"><span class="lineNum">      36</span>              : </span>
 <span id="L37"><span class="lineNum">      37</span>              : ### Keyword Arguments</span>
 <span id="L38"><span class="lineNum">      38</span>              : - `num_fibers`: target number of Voronoi seed cells; controls capillary mesh density.</span>
-<span id="L39"><span class="lineNum">      39</span>              : - `region_size`: side length of the square region the capillary mesh covers.</span>
+<span id="L39"><span class="lineNum">      39</span>              : - `region_size`: side length of the square region the capillary mesh covers (`Cube`).</span>
 <span id="L40"><span class="lineNum">      40</span>              : - `random_perturbation`: stddev of the hex-grid jitter, as a fraction of the grid pitch.</span>
-<span id="L41"><span class="lineNum">      41</span>              : - `num_layers`: number of stacked layers the planar mesh is extruded into.</span>
-<span id="L42"><span class="lineNum">      42</span>              : - `layer_spacing_fraction`: spacing between extrusion layers, as a fraction of `region_size`.</span>
-<span id="L43"><span class="lineNum">      43</span>              : - `drop_fraction_hex_grid`: fraction of horizontal (inter-layer) edges dropped per layer.</span>
-<span id="L44"><span class="lineNum">      44</span>              : - `radius_default_small_vessels`: median capillary radius (lognormal location).</span>
-<span id="L45"><span class="lineNum">      45</span>              : - `radius_stddev_small_vessels`: lognormal shape parameter of the capillary radius.</span>
-<span id="L46"><span class="lineNum">      46</span>              : - `scale_factor_venule`: multiplies every venule radius.</span>
-<span id="L47"><span class="lineNum">      47</span>              : - `scale_factor_arteriole`: multiplies every arteriole radius.</span>
-<span id="L48"><span class="lineNum">      48</span>              : </span>
-<span id="L49"><span class="lineNum">      49</span>              : ### Examples</span>
-<span id="L50"><span class="lineNum">      50</span>              : ```julia</span>
-<span id="L51"><span class="lineNum">      51</span>              : cfg = NetworkConfig(num_fibers = 60, num_layers = 25)</span>
-<span id="L52"><span class="lineNum">      52</span>              : cfg32 = NetworkConfig{Float32}(num_fibers = 60)</span>
-<span id="L53"><span class="lineNum">      53</span>              : ```</span>
-<span id="L54"><span class="lineNum">      54</span>              : &quot;&quot;&quot;</span>
-<span id="L55"><span class="lineNum">      55</span> <span class="tlaGNC tlaBgGNC">          58 : Base.@kwdef struct NetworkConfig{T&lt;:Real}</span></span>
-<span id="L56"><span class="lineNum">      56</span> <span class="tlaGNC">          29 :     num_fibers::Int = 40</span></span>
-<span id="L57"><span class="lineNum">      57</span>              :     region_size::T = 200.0</span>
-<span id="L58"><span class="lineNum">      58</span>              :     random_perturbation::T = 0.1</span>
-<span id="L59"><span class="lineNum">      59</span>              :     num_layers::Int = 20</span>
-<span id="L60"><span class="lineNum">      60</span>              :     layer_spacing_fraction::T = 0.07</span>
-<span id="L61"><span class="lineNum">      61</span>              :     drop_fraction_hex_grid::T = 0.7</span>
-<span id="L62"><span class="lineNum">      62</span>              :     radius_default_small_vessels::T = 2.6</span>
-<span id="L63"><span class="lineNum">      63</span>              :     radius_stddev_small_vessels::T = 0.15</span>
-<span id="L64"><span class="lineNum">      64</span>              :     scale_factor_venule::T = 1.0</span>
-<span id="L65"><span class="lineNum">      65</span>              :     scale_factor_arteriole::T = 0.7</span>
-<span id="L66"><span class="lineNum">      66</span>              : end</span>
-<span id="L67"><span class="lineNum">      67</span>              : </span>
-<span id="L68"><span class="lineNum">      68</span>              : #--------------------------------------------------------------------------------# VascularNetwork</span>
-<span id="L69"><span class="lineNum">      69</span>              : </span>
-<span id="L70"><span class="lineNum">      70</span>              : &quot;&quot;&quot;</span>
-<span id="L71"><span class="lineNum">      71</span>              :     VascularNetwork{T}</span>
-<span id="L72"><span class="lineNum">      72</span>              : </span>
-<span id="L73"><span class="lineNum">      73</span>              : A 3D vascular network as a graph of line elements, parametric over the floating-point</span>
-<span id="L74"><span class="lineNum">      74</span>              : element type `T`.</span>
+<span id="L41"><span class="lineNum">      41</span>              : - `num_layers`: number of stacked layers the planar mesh is extruded into. On</span>
+<span id="L42"><span class="lineNum">      42</span>              :   [`HalfSphere`](@ref) this is an upper bound; the effective count is geometry-limited.</span>
+<span id="L43"><span class="lineNum">      43</span>              : - `layer_spacing_fraction`: spacing between extrusion layers, as a fraction of the</span>
+<span id="L44"><span class="lineNum">      44</span>              :   domain's characteristic size (`region_size` for `Cube`, `sphere_radius` for `HalfSphere`).</span>
+<span id="L45"><span class="lineNum">      45</span>              : - `drop_fraction_hex_grid`: fraction of horizontal (inter-layer) edges dropped per layer.</span>
+<span id="L46"><span class="lineNum">      46</span>              : - `radius_default_small_vessels`: median capillary radius (lognormal location).</span>
+<span id="L47"><span class="lineNum">      47</span>              : - `radius_stddev_small_vessels`: lognormal shape parameter of the capillary radius.</span>
+<span id="L48"><span class="lineNum">      48</span>              : - `scale_factor_venule`: multiplies every venule radius.</span>
+<span id="L49"><span class="lineNum">      49</span>              : - `scale_factor_arteriole`: multiplies every arteriole radius.</span>
+<span id="L50"><span class="lineNum">      50</span>              : - `domain`: the bounding region, an [`AbstractDomain`](@ref) ([`Cube`](@ref) default or</span>
+<span id="L51"><span class="lineNum">      51</span>              :   [`HalfSphere`](@ref)); selects which construction [`generate_network`](@ref) runs.</span>
+<span id="L52"><span class="lineNum">      52</span>              : - `sphere_radius`: hemisphere radius `R`, used only on the [`HalfSphere`](@ref) domain.</span>
+<span id="L53"><span class="lineNum">      53</span>              : </span>
+<span id="L54"><span class="lineNum">      54</span>              : ### Examples</span>
+<span id="L55"><span class="lineNum">      55</span>              : ```julia</span>
+<span id="L56"><span class="lineNum">      56</span>              : cfg = NetworkConfig(num_fibers = 60, num_layers = 25)</span>
+<span id="L57"><span class="lineNum">      57</span>              : cfg32 = NetworkConfig{Float32}(num_fibers = 60)</span>
+<span id="L58"><span class="lineNum">      58</span>              : dome = NetworkConfig(domain = HalfSphere(), sphere_radius = 120.0)</span>
+<span id="L59"><span class="lineNum">      59</span>              : ```</span>
+<span id="L60"><span class="lineNum">      60</span>              : &quot;&quot;&quot;</span>
+<span id="L61"><span class="lineNum">      61</span> <span class="tlaGNC tlaBgGNC">          96 : Base.@kwdef struct NetworkConfig{T&lt;:Real}</span></span>
+<span id="L62"><span class="lineNum">      62</span> <span class="tlaGNC">          48 :     num_fibers::Int = 40</span></span>
+<span id="L63"><span class="lineNum">      63</span>              :     region_size::T = 200.0</span>
+<span id="L64"><span class="lineNum">      64</span>              :     random_perturbation::T = 0.1</span>
+<span id="L65"><span class="lineNum">      65</span>              :     num_layers::Int = 20</span>
+<span id="L66"><span class="lineNum">      66</span>              :     layer_spacing_fraction::T = 0.07</span>
+<span id="L67"><span class="lineNum">      67</span>              :     drop_fraction_hex_grid::T = 0.7</span>
+<span id="L68"><span class="lineNum">      68</span>              :     radius_default_small_vessels::T = 2.6</span>
+<span id="L69"><span class="lineNum">      69</span>              :     radius_stddev_small_vessels::T = 0.15</span>
+<span id="L70"><span class="lineNum">      70</span>              :     scale_factor_venule::T = 1.0</span>
+<span id="L71"><span class="lineNum">      71</span>              :     scale_factor_arteriole::T = 0.7</span>
+<span id="L72"><span class="lineNum">      72</span>              :     domain::AbstractDomain = Cube()</span>
+<span id="L73"><span class="lineNum">      73</span>              :     sphere_radius::T = 100.0</span>
+<span id="L74"><span class="lineNum">      74</span>              : end</span>
 <span id="L75"><span class="lineNum">      75</span>              : </span>
-<span id="L76"><span class="lineNum">      76</span>              : ### Fields</span>
-<span id="L77"><span class="lineNum">      77</span>              : - `vertices`: node positions, one `SVector{3,T}` each.</span>
-<span id="L78"><span class="lineNum">      78</span>              : - `elements`: line elements, each an `SVector{2,Int}` of 1-based vertex indices.</span>
-<span id="L79"><span class="lineNum">      79</span>              : - `radii`: vessel radius per element; `length(radii) == length(elements)`.</span>
-<span id="L80"><span class="lineNum">      80</span>              : - `node_tags`: [`NodeTag`](@ref) per vertex; `length(node_tags) == length(vertices)`.</span>
-<span id="L81"><span class="lineNum">      81</span>              : - `bcvalues`: boundary-condition value per vertex (velocity or pressure, depending on the</span>
-<span id="L82"><span class="lineNum">      82</span>              :   tag); `length(bcvalues) == length(vertices)`. Zero for interior nodes.</span>
-<span id="L83"><span class="lineNum">      83</span>              : &quot;&quot;&quot;</span>
-<span id="L84"><span class="lineNum">      84</span>              : struct VascularNetwork{T&lt;:Real}</span>
-<span id="L85"><span class="lineNum">      85</span> <span class="tlaGNC">          25 :     vertices::Vector{SVector{3,T}}</span></span>
-<span id="L86"><span class="lineNum">      86</span>              :     elements::Vector{SVector{2,Int}}</span>
-<span id="L87"><span class="lineNum">      87</span>              :     radii::Vector{T}</span>
-<span id="L88"><span class="lineNum">      88</span>              :     node_tags::Vector{NodeTag}</span>
-<span id="L89"><span class="lineNum">      89</span>              :     bcvalues::Vector{T}</span>
-<span id="L90"><span class="lineNum">      90</span>              : end</span>
-<span id="L91"><span class="lineNum">      91</span>              : </span>
-<span id="L92"><span class="lineNum">      92</span> <span class="tlaGNC">          25 : VascularNetwork{T}() where {T&lt;:Real} =</span></span>
-<span id="L93"><span class="lineNum">      93</span>              :     VascularNetwork{T}(SVector{3,T}[], SVector{2,Int}[], T[], NodeTag[], T[])</span>
-<span id="L94"><span class="lineNum">      94</span> <span class="tlaUNC tlaBgUNC">           0 : VascularNetwork() = VascularNetwork{Float64}()</span></span>
-<span id="L95"><span class="lineNum">      95</span>              : </span>
-<span id="L96"><span class="lineNum">      96</span>              : &quot;Number of vertices in the network.&quot;</span>
-<span id="L97"><span class="lineNum">      97</span> <span class="tlaGNC tlaBgGNC">        8330 : nvertices(net::VascularNetwork) = length(net.vertices)</span></span>
-<span id="L98"><span class="lineNum">      98</span>              : </span>
-<span id="L99"><span class="lineNum">      99</span>              : &quot;Number of line elements in the network.&quot;</span>
-<span id="L100"><span class="lineNum">     100</span> <span class="tlaGNC">          10 : nelements(net::VascularNetwork) = length(net.elements)</span></span>
-<span id="L101"><span class="lineNum">     101</span>              : </span>
-<span id="L102"><span class="lineNum">     102</span>              : &quot;&quot;&quot;</span>
-<span id="L103"><span class="lineNum">     103</span>              :     add_vertex!(net, position) -&gt; Int</span>
-<span id="L104"><span class="lineNum">     104</span>              : </span>
-<span id="L105"><span class="lineNum">     105</span>              : Append a vertex at `position` (defaulting to an `Interior` tag and zero BC value) and</span>
-<span id="L106"><span class="lineNum">     106</span>              : return its 1-based index.</span>
-<span id="L107"><span class="lineNum">     107</span>              : &quot;&quot;&quot;</span>
-<span id="L108"><span class="lineNum">     108</span> <span class="tlaGNC">       30311 : function add_vertex!(net::VascularNetwork{T}, position::SVector{3,&lt;:Real}) where {T}</span></span>
-<span id="L109"><span class="lineNum">     109</span> <span class="tlaGNC">       30311 :     push!(net.vertices, position)</span></span>
-<span id="L110"><span class="lineNum">     110</span> <span class="tlaGNC">       30311 :     push!(net.node_tags, Interior)</span></span>
-<span id="L111"><span class="lineNum">     111</span> <span class="tlaGNC">       30311 :     push!(net.bcvalues, zero(T))</span></span>
-<span id="L112"><span class="lineNum">     112</span> <span class="tlaGNC">       30311 :     return length(net.vertices)</span></span>
-<span id="L113"><span class="lineNum">     113</span>              : end</span>
-<span id="L114"><span class="lineNum">     114</span>              : </span>
+<span id="L76"><span class="lineNum">      76</span>              : #--------------------------------------------------------------------------------# VascularNetwork</span>
+<span id="L77"><span class="lineNum">      77</span>              : </span>
+<span id="L78"><span class="lineNum">      78</span>              : &quot;&quot;&quot;</span>
+<span id="L79"><span class="lineNum">      79</span>              :     VascularNetwork{T}</span>
+<span id="L80"><span class="lineNum">      80</span>              : </span>
+<span id="L81"><span class="lineNum">      81</span>              : A 3D vascular network as a graph of line elements, parametric over the floating-point</span>
+<span id="L82"><span class="lineNum">      82</span>              : element type `T`.</span>
+<span id="L83"><span class="lineNum">      83</span>              : </span>
+<span id="L84"><span class="lineNum">      84</span>              : ### Fields</span>
+<span id="L85"><span class="lineNum">      85</span>              : - `vertices`: node positions, one `SVector{3,T}` each.</span>
+<span id="L86"><span class="lineNum">      86</span>              : - `elements`: line elements, each an `SVector{2,Int}` of 1-based vertex indices.</span>
+<span id="L87"><span class="lineNum">      87</span>              : - `radii`: vessel radius per element; `length(radii) == length(elements)`.</span>
+<span id="L88"><span class="lineNum">      88</span>              : - `node_tags`: [`NodeTag`](@ref) per vertex; `length(node_tags) == length(vertices)`.</span>
+<span id="L89"><span class="lineNum">      89</span>              : - `bcvalues`: boundary-condition value per vertex (velocity or pressure, depending on the</span>
+<span id="L90"><span class="lineNum">      90</span>              :   tag); `length(bcvalues) == length(vertices)`. Zero for interior nodes.</span>
+<span id="L91"><span class="lineNum">      91</span>              : &quot;&quot;&quot;</span>
+<span id="L92"><span class="lineNum">      92</span>              : struct VascularNetwork{T&lt;:Real}</span>
+<span id="L93"><span class="lineNum">      93</span> <span class="tlaGNC">          65 :     vertices::Vector{SVector{3,T}}</span></span>
+<span id="L94"><span class="lineNum">      94</span>              :     elements::Vector{SVector{2,Int}}</span>
+<span id="L95"><span class="lineNum">      95</span>              :     radii::Vector{T}</span>
+<span id="L96"><span class="lineNum">      96</span>              :     node_tags::Vector{NodeTag}</span>
+<span id="L97"><span class="lineNum">      97</span>              :     bcvalues::Vector{T}</span>
+<span id="L98"><span class="lineNum">      98</span>              : end</span>
+<span id="L99"><span class="lineNum">      99</span>              : </span>
+<span id="L100"><span class="lineNum">     100</span> <span class="tlaGNC">          48 : VascularNetwork{T}() where {T&lt;:Real} =</span></span>
+<span id="L101"><span class="lineNum">     101</span>              :     VascularNetwork{T}(SVector{3,T}[], SVector{2,Int}[], T[], NodeTag[], T[])</span>
+<span id="L102"><span class="lineNum">     102</span> <span class="tlaUNC tlaBgUNC">           0 : VascularNetwork() = VascularNetwork{Float64}()</span></span>
+<span id="L103"><span class="lineNum">     103</span>              : </span>
+<span id="L104"><span class="lineNum">     104</span>              : &quot;Number of vertices in the network.&quot;</span>
+<span id="L105"><span class="lineNum">     105</span> <span class="tlaGNC tlaBgGNC">       16666 : nvertices(net::VascularNetwork) = length(net.vertices)</span></span>
+<span id="L106"><span class="lineNum">     106</span>              : </span>
+<span id="L107"><span class="lineNum">     107</span>              : &quot;Number of line elements in the network.&quot;</span>
+<span id="L108"><span class="lineNum">     108</span> <span class="tlaGNC">          16 : nelements(net::VascularNetwork) = length(net.elements)</span></span>
+<span id="L109"><span class="lineNum">     109</span>              : </span>
+<span id="L110"><span class="lineNum">     110</span>              : &quot;&quot;&quot;</span>
+<span id="L111"><span class="lineNum">     111</span>              :     add_vertex!(net, position) -&gt; Int</span>
+<span id="L112"><span class="lineNum">     112</span>              : </span>
+<span id="L113"><span class="lineNum">     113</span>              : Append a vertex at `position` (defaulting to an `Interior` tag and zero BC value) and</span>
+<span id="L114"><span class="lineNum">     114</span>              : return its 1-based index.</span>
 <span id="L115"><span class="lineNum">     115</span>              : &quot;&quot;&quot;</span>
-<span id="L116"><span class="lineNum">     116</span>              :     add_element!(net, i, j, radius) -&gt; Int</span>
-<span id="L117"><span class="lineNum">     117</span>              : </span>
-<span id="L118"><span class="lineNum">     118</span>              : Append a line element connecting vertices `i` and `j` with the given `radius` and return</span>
-<span id="L119"><span class="lineNum">     119</span>              : its 1-based index.</span>
-<span id="L120"><span class="lineNum">     120</span>              : &quot;&quot;&quot;</span>
-<span id="L121"><span class="lineNum">     121</span> <span class="tlaGNC">           4 : function add_element!(net::VascularNetwork, i::Integer, j::Integer, radius::Real)</span></span>
-<span id="L122"><span class="lineNum">     122</span> <span class="tlaGNC">       40271 :     push!(net.elements, SVector{2,Int}(i, j))</span></span>
-<span id="L123"><span class="lineNum">     123</span> <span class="tlaGNC">       40271 :     push!(net.radii, radius)</span></span>
-<span id="L124"><span class="lineNum">     124</span> <span class="tlaGNC">       40271 :     return length(net.elements)</span></span>
-<span id="L125"><span class="lineNum">     125</span>              : end</span>
+<span id="L116"><span class="lineNum">     116</span> <span class="tlaGNC">       47794 : function add_vertex!(net::VascularNetwork{T}, position::SVector{3,&lt;:Real}) where {T}</span></span>
+<span id="L117"><span class="lineNum">     117</span> <span class="tlaGNC">       47794 :     push!(net.vertices, position)</span></span>
+<span id="L118"><span class="lineNum">     118</span> <span class="tlaGNC">       47794 :     push!(net.node_tags, Interior)</span></span>
+<span id="L119"><span class="lineNum">     119</span> <span class="tlaGNC">       47794 :     push!(net.bcvalues, zero(T))</span></span>
+<span id="L120"><span class="lineNum">     120</span> <span class="tlaGNC">       47794 :     return length(net.vertices)</span></span>
+<span id="L121"><span class="lineNum">     121</span>              : end</span>
+<span id="L122"><span class="lineNum">     122</span>              : </span>
+<span id="L123"><span class="lineNum">     123</span>              : &quot;&quot;&quot;</span>
+<span id="L124"><span class="lineNum">     124</span>              :     add_element!(net, i, j, radius) -&gt; Int</span>
+<span id="L125"><span class="lineNum">     125</span>              : </span>
+<span id="L126"><span class="lineNum">     126</span>              : Append a line element connecting vertices `i` and `j` with the given `radius` and return</span>
+<span id="L127"><span class="lineNum">     127</span>              : its 1-based index.</span>
+<span id="L128"><span class="lineNum">     128</span>              : &quot;&quot;&quot;</span>
+<span id="L129"><span class="lineNum">     129</span> <span class="tlaGNC">          14 : function add_element!(net::VascularNetwork, i::Integer, j::Integer, radius::Real)</span></span>
+<span id="L130"><span class="lineNum">     130</span> <span class="tlaGNC">       62641 :     push!(net.elements, SVector{2,Int}(i, j))</span></span>
+<span id="L131"><span class="lineNum">     131</span> <span class="tlaGNC">       62641 :     push!(net.radii, radius)</span></span>
+<span id="L132"><span class="lineNum">     132</span> <span class="tlaGNC">       62641 :     return length(net.elements)</span></span>
+<span id="L133"><span class="lineNum">     133</span>              : end</span>
         </pre>
               </td>
             </tr>

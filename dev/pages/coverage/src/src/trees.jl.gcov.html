@@ -32,12 +32,12 @@
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntryHi">100.0&nbsp;%</td>
-            <td class="headerCovTableEntry">84</td>
-            <td class="headerCovTableEntry">84</td>
+            <td class="headerCovTableEntry">82</td>
+            <td class="headerCovTableEntry">82</td>
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2026-06-18 16:31:05</td>
+            <td class="headerValue">2026-06-18 21:36:20</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">-</td>
@@ -63,168 +63,174 @@
 <span id="L1"><span class="lineNum">       1</span>              : #--------------------------------------------------------------------------------# Helpers</span>
 <span id="L2"><span class="lineNum">       2</span>              : </span>
 <span id="L3"><span class="lineNum">       3</span>              : # Assign a boundary tag and value to a vertex.</span>
-<span id="L4"><span class="lineNum">       4</span>              : function set_bc!(net::VascularNetwork, vertex::Integer, tag::NodeTag, value::Real)</span>
-<span id="L5"><span class="lineNum">       5</span> <span class="tlaGNC tlaBgGNC">        3050 :     net.node_tags[vertex] = tag</span></span>
-<span id="L6"><span class="lineNum">       6</span> <span class="tlaGNC">        3050 :     net.bcvalues[vertex] = value</span></span>
-<span id="L7"><span class="lineNum">       7</span> <span class="tlaGNC">        3050 :     return nothing</span></span>
+<span id="L4"><span class="lineNum">       4</span> <span class="tlaGNC tlaBgGNC">           2 : function set_bc!(net::VascularNetwork, vertex::Integer, tag::NodeTag, value::Real)</span></span>
+<span id="L5"><span class="lineNum">       5</span> <span class="tlaGNC">        6104 :     net.node_tags[vertex] = tag</span></span>
+<span id="L6"><span class="lineNum">       6</span> <span class="tlaGNC">        6104 :     net.bcvalues[vertex] = value</span></span>
+<span id="L7"><span class="lineNum">       7</span> <span class="tlaGNC">        6104 :     return nothing</span></span>
 <span id="L8"><span class="lineNum">       8</span>              : end</span>
 <span id="L9"><span class="lineNum">       9</span>              : </span>
 <span id="L10"><span class="lineNum">      10</span>              : # Index of the vertex in `net.vertices[1:search_upto]` closest to `point`.</span>
-<span id="L11"><span class="lineNum">      11</span> <span class="tlaGNC">         239 : function nearest_vertex(net::VascularNetwork{T}, point::SVector{3,&lt;:Real},</span></span>
+<span id="L11"><span class="lineNum">      11</span> <span class="tlaGNC">         392 : function nearest_vertex(net::VascularNetwork{T}, point::SVector{3,&lt;:Real},</span></span>
 <span id="L12"><span class="lineNum">      12</span>              :                         search_upto::Integer) where {T}</span>
-<span id="L13"><span class="lineNum">      13</span> <span class="tlaGNC">         239 :     best_index = 0</span></span>
-<span id="L14"><span class="lineNum">      14</span> <span class="tlaGNC">         239 :     best_distance = convert(T, Inf)</span></span>
-<span id="L15"><span class="lineNum">      15</span> <span class="tlaGNC">         239 :     @inbounds for i in 1:search_upto</span></span>
-<span id="L16"><span class="lineNum">      16</span> <span class="tlaGNC">      388484 :         d = norm(net.vertices[i] - point)</span></span>
-<span id="L17"><span class="lineNum">      17</span> <span class="tlaGNC">      388484 :         if d &lt; best_distance</span></span>
-<span id="L18"><span class="lineNum">      18</span> <span class="tlaGNC">        7004 :             best_distance = d</span></span>
-<span id="L19"><span class="lineNum">      19</span> <span class="tlaGNC">        7004 :             best_index = i</span></span>
+<span id="L13"><span class="lineNum">      13</span> <span class="tlaGNC">         392 :     best_index = 0</span></span>
+<span id="L14"><span class="lineNum">      14</span> <span class="tlaGNC">         392 :     best_distance = convert(T, Inf)</span></span>
+<span id="L15"><span class="lineNum">      15</span> <span class="tlaGNC">         392 :     @inbounds for i in 1:search_upto</span></span>
+<span id="L16"><span class="lineNum">      16</span> <span class="tlaGNC">      529092 :         d = norm(net.vertices[i] - point)</span></span>
+<span id="L17"><span class="lineNum">      17</span> <span class="tlaGNC">      529092 :         if d &lt; best_distance</span></span>
+<span id="L18"><span class="lineNum">      18</span> <span class="tlaGNC">       13038 :             best_distance = d</span></span>
+<span id="L19"><span class="lineNum">      19</span> <span class="tlaGNC">       13038 :             best_index = i</span></span>
 <span id="L20"><span class="lineNum">      20</span>              :         end</span>
-<span id="L21"><span class="lineNum">      21</span> <span class="tlaGNC">      776729 :     end</span></span>
-<span id="L22"><span class="lineNum">      22</span> <span class="tlaGNC">         239 :     return best_index</span></span>
+<span id="L21"><span class="lineNum">      21</span> <span class="tlaGNC">     1057792 :     end</span></span>
+<span id="L22"><span class="lineNum">      22</span> <span class="tlaGNC">         392 :     return best_index</span></span>
 <span id="L23"><span class="lineNum">      23</span>              : end</span>
 <span id="L24"><span class="lineNum">      24</span>              : </span>
 <span id="L25"><span class="lineNum">      25</span>              : #--------------------------------------------------------------------------------# Venule</span>
 <span id="L26"><span class="lineNum">      26</span>              : </span>
 <span id="L27"><span class="lineNum">      27</span>              : &quot;&quot;&quot;</span>
-<span id="L28"><span class="lineNum">      28</span>              :     add_venule!(net, rng, cfg, a, connecting)</span>
+<span id="L28"><span class="lineNum">      28</span>              :     add_venule!(net, rng, cfg, a, connecting; start, finish, tag_distal_inlet)</span>
 <span id="L29"><span class="lineNum">      29</span>              : </span>
 <span id="L30"><span class="lineNum">      30</span>              : Append the draining venule: a single chain of 11 vertices with a tapering radius, plus</span>
 <span id="L31"><span class="lineNum">      31</span>              : cross-links from every second vertex to the nearest capillary vertex.</span>
 <span id="L32"><span class="lineNum">      32</span>              : </span>
-<span id="L33"><span class="lineNum">      33</span>              : The first vertex is tagged [`Outlet`](@ref) (pressure boundary condition) and the last is</span>
-<span id="L34"><span class="lineNum">      34</span>              : tagged [`InletVenule`](@ref) (velocity boundary condition). The capillary vertices the</span>
-<span id="L35"><span class="lineNum">      35</span>              : cross-links attach to are appended to `connecting`.</span>
-<span id="L36"><span class="lineNum">      36</span>              : &quot;&quot;&quot;</span>
-<span id="L37"><span class="lineNum">      37</span> <span class="tlaGNC">          19 : function add_venule!(net::VascularNetwork{T}, rng::AbstractRNG, cfg::NetworkConfig{T},</span></span>
-<span id="L38"><span class="lineNum">      38</span>              :                      a::T, connecting::Vector{Int}) where {T}</span>
-<span id="L39"><span class="lineNum">      39</span> <span class="tlaGNC">          19 :     dz = cfg.layer_spacing_fraction * cfg.region_size</span></span>
-<span id="L40"><span class="lineNum">      40</span> <span class="tlaGNC">          19 :     start = 2 .* SVector{3,T}(0, -5, 0)</span></span>
-<span id="L41"><span class="lineNum">      41</span> <span class="tlaGNC">          19 :     finish = 2 .* SVector{3,T}(100, -5, 0.5 * cfg.num_layers * dz - 5)</span></span>
-<span id="L42"><span class="lineNum">      42</span>              : </span>
-<span id="L43"><span class="lineNum">      43</span> <span class="tlaGNC">          19 :     nverts = 11</span></span>
-<span id="L44"><span class="lineNum">      44</span> <span class="tlaGNC">          19 :     base = nvertices(net) + 1</span></span>
-<span id="L45"><span class="lineNum">      45</span> <span class="tlaGNC">          19 :     capillary_count = nvertices(net)</span></span>
-<span id="L46"><span class="lineNum">      46</span> <span class="tlaGNC">          19 :     σ = T(0.1) * a</span></span>
-<span id="L47"><span class="lineNum">      47</span> <span class="tlaGNC">          19 :     for i in 0:nverts-1</span></span>
-<span id="L48"><span class="lineNum">      48</span> <span class="tlaGNC">         209 :         p = start + (finish - start) * T(i / nverts)</span></span>
-<span id="L49"><span class="lineNum">      49</span> <span class="tlaGNC">         211 :         p += σ .* SVector{3,T}(_randn(rng, T), _randn(rng, T), _randn(rng, T))</span></span>
-<span id="L50"><span class="lineNum">      50</span> <span class="tlaGNC">         209 :         add_vertex!(net, p)</span></span>
-<span id="L51"><span class="lineNum">      51</span> <span class="tlaGNC">         399 :     end</span></span>
-<span id="L52"><span class="lineNum">      52</span>              : </span>
-<span id="L53"><span class="lineNum">      53</span> <span class="tlaGNC">          19 :     set_bc!(net, base, Outlet, 2000)</span></span>
-<span id="L54"><span class="lineNum">      54</span> <span class="tlaGNC">          19 :     set_bc!(net, base + nverts - 1, InletVenule, 1e-3)</span></span>
-<span id="L55"><span class="lineNum">      55</span>              : </span>
-<span id="L56"><span class="lineNum">      56</span> <span class="tlaGNC">          19 :     sf = cfg.scale_factor_venule</span></span>
-<span id="L57"><span class="lineNum">      57</span> <span class="tlaGNC">          19 :     venule_radius = T(20) * sf</span></span>
-<span id="L58"><span class="lineNum">      58</span> <span class="tlaGNC">          19 :     for i in 0:nverts-2</span></span>
-<span id="L59"><span class="lineNum">      59</span> <span class="tlaGNC">         199 :         add_element!(net, base + i, base + i + 1, venule_radius + T(0.1) * _randn(rng, T))</span></span>
-<span id="L60"><span class="lineNum">      60</span> <span class="tlaGNC">         190 :         iseven(i) &amp;&amp; (venule_radius -= T(1.5) * sf)</span></span>
-<span id="L61"><span class="lineNum">      61</span> <span class="tlaGNC">         361 :     end</span></span>
-<span id="L62"><span class="lineNum">      62</span>              : </span>
-<span id="L63"><span class="lineNum">      63</span> <span class="tlaGNC">          19 :     for i in 1:2:nverts-1</span></span>
-<span id="L64"><span class="lineNum">      64</span> <span class="tlaGNC">          95 :         vertex = base + i</span></span>
-<span id="L65"><span class="lineNum">      65</span> <span class="tlaGNC">          95 :         closest = nearest_vertex(net, net.vertices[vertex], capillary_count)</span></span>
-<span id="L66"><span class="lineNum">      66</span> <span class="tlaGNC">          95 :         push!(connecting, closest)</span></span>
-<span id="L67"><span class="lineNum">      67</span> <span class="tlaGNC">          95 :         add_element!(net, vertex, closest, T(7) * sf + T(0.5) * _randn(rng, T))</span></span>
-<span id="L68"><span class="lineNum">      68</span> <span class="tlaGNC">         171 :     end</span></span>
-<span id="L69"><span class="lineNum">      69</span> <span class="tlaGNC">          19 :     return nothing</span></span>
-<span id="L70"><span class="lineNum">      70</span>              : end</span>
-<span id="L71"><span class="lineNum">      71</span>              : </span>
-<span id="L72"><span class="lineNum">      72</span>              : #--------------------------------------------------------------------------------# Arteriole</span>
-<span id="L73"><span class="lineNum">      73</span>              : </span>
-<span id="L74"><span class="lineNum">      74</span>              : &quot;&quot;&quot;</span>
-<span id="L75"><span class="lineNum">      75</span>              :     add_arteriole!(net, rng, cfg, connecting; kwargs...)</span>
-<span id="L76"><span class="lineNum">      76</span>              : </span>
-<span id="L77"><span class="lineNum">      77</span>              : Append a feeding arteriole: a trunk that bifurcates twice into a binary tree of 8</span>
-<span id="L78"><span class="lineNum">      78</span>              : vertices, whose 4 leaves are each connected to the nearest existing vertex outside the</span>
-<span id="L79"><span class="lineNum">      79</span>              : arteriole trees.</span>
-<span id="L80"><span class="lineNum">      80</span>              : </span>
-<span id="L81"><span class="lineNum">      81</span>              : The trunk start is tagged [`Inlet`](@ref) (velocity boundary condition). The vertices the</span>
-<span id="L82"><span class="lineNum">      82</span>              : leaves attach to are appended to `connecting`.</span>
-<span id="L83"><span class="lineNum">      83</span>              : </span>
-<span id="L84"><span class="lineNum">      84</span>              : ### Keyword Arguments</span>
-<span id="L85"><span class="lineNum">      85</span>              : - `start`, `finish`: trunk endpoints.</span>
-<span id="L86"><span class="lineNum">      86</span>              : - `trunk_radius`: radius of the trunk element.</span>
-<span id="L87"><span class="lineNum">      87</span>              : - `o1`, `o2`: offsets from `finish` to the first-generation daughters.</span>
-<span id="L88"><span class="lineNum">      88</span>              : - `o11`, `o12`: offsets from the first daughter to its two children.</span>
-<span id="L89"><span class="lineNum">      89</span>              : - `o21`, `o22`: offsets from the second daughter to its two children.</span>
-<span id="L90"><span class="lineNum">      90</span>              : - `exclude_count`: number of trailing vertices excluded from the nearest-vertex search</span>
-<span id="L91"><span class="lineNum">      91</span>              :   (the arteriole's own vertices, and those of any earlier arteriole).</span>
-<span id="L92"><span class="lineNum">      92</span>              : &quot;&quot;&quot;</span>
-<span id="L93"><span class="lineNum">      93</span> <span class="tlaGNC">          72 : function add_arteriole!(net::VascularNetwork{T}, rng::AbstractRNG, cfg::NetworkConfig{T},</span></span>
-<span id="L94"><span class="lineNum">      94</span>              :                         connecting::Vector{Int};</span>
-<span id="L95"><span class="lineNum">      95</span>              :                         start::SVector{3,T}, finish::SVector{3,T},</span>
-<span id="L96"><span class="lineNum">      96</span>              :                         trunk_radius::Real,</span>
-<span id="L97"><span class="lineNum">      97</span>              :                         o1::SVector{3,T}, o2::SVector{3,T},</span>
-<span id="L98"><span class="lineNum">      98</span>              :                         o11::SVector{3,T}, o12::SVector{3,T},</span>
-<span id="L99"><span class="lineNum">      99</span>              :                         o21::SVector{3,T}, o22::SVector{3,T},</span>
-<span id="L100"><span class="lineNum">     100</span>              :                         exclude_count::Integer) where {T}</span>
-<span id="L101"><span class="lineNum">     101</span> <span class="tlaGNC">          36 :     sf = cfg.scale_factor_arteriole</span></span>
-<span id="L102"><span class="lineNum">     102</span> <span class="tlaGNC">          36 :     base = nvertices(net) + 1</span></span>
-<span id="L103"><span class="lineNum">     103</span>              : </span>
-<span id="L104"><span class="lineNum">     104</span> <span class="tlaGNC">          36 :     add_vertex!(net, start)</span></span>
-<span id="L105"><span class="lineNum">     105</span> <span class="tlaGNC">          36 :     add_vertex!(net, finish)</span></span>
-<span id="L106"><span class="lineNum">     106</span> <span class="tlaGNC">          36 :     add_element!(net, base, base + 1, trunk_radius)</span></span>
-<span id="L107"><span class="lineNum">     107</span>              : </span>
-<span id="L108"><span class="lineNum">     108</span> <span class="tlaGNC">          36 :     daughter1 = finish + o1</span></span>
-<span id="L109"><span class="lineNum">     109</span> <span class="tlaGNC">          36 :     daughter2 = finish + o2</span></span>
-<span id="L110"><span class="lineNum">     110</span> <span class="tlaGNC">          36 :     add_vertex!(net, daughter1)</span></span>
-<span id="L111"><span class="lineNum">     111</span> <span class="tlaGNC">          36 :     add_vertex!(net, daughter2)</span></span>
-<span id="L112"><span class="lineNum">     112</span> <span class="tlaGNC">          36 :     add_element!(net, base + 1, base + 2, T(10) * sf)</span></span>
-<span id="L113"><span class="lineNum">     113</span> <span class="tlaGNC">          36 :     add_element!(net, base + 1, base + 3, T(10) * sf)</span></span>
-<span id="L114"><span class="lineNum">     114</span>              : </span>
-<span id="L115"><span class="lineNum">     115</span> <span class="tlaGNC">          36 :     daughter11 = daughter1 + o11</span></span>
-<span id="L116"><span class="lineNum">     116</span> <span class="tlaGNC">          36 :     daughter12 = daughter1 + o12</span></span>
-<span id="L117"><span class="lineNum">     117</span> <span class="tlaGNC">          36 :     add_vertex!(net, daughter11)</span></span>
-<span id="L118"><span class="lineNum">     118</span> <span class="tlaGNC">          36 :     add_vertex!(net, daughter12)</span></span>
-<span id="L119"><span class="lineNum">     119</span> <span class="tlaGNC">          36 :     add_element!(net, base + 2, base + 4, T(7) * sf)</span></span>
-<span id="L120"><span class="lineNum">     120</span> <span class="tlaGNC">          36 :     add_element!(net, base + 2, base + 5, T(7) * sf)</span></span>
-<span id="L121"><span class="lineNum">     121</span>              : </span>
-<span id="L122"><span class="lineNum">     122</span> <span class="tlaGNC">          36 :     daughter21 = daughter2 + o21</span></span>
-<span id="L123"><span class="lineNum">     123</span> <span class="tlaGNC">          36 :     daughter22 = daughter2 + o22</span></span>
-<span id="L124"><span class="lineNum">     124</span> <span class="tlaGNC">          36 :     add_vertex!(net, daughter21)</span></span>
-<span id="L125"><span class="lineNum">     125</span> <span class="tlaGNC">          36 :     add_vertex!(net, daughter22)</span></span>
-<span id="L126"><span class="lineNum">     126</span> <span class="tlaGNC">          36 :     add_element!(net, base + 3, base + 6, T(7) * sf)</span></span>
-<span id="L127"><span class="lineNum">     127</span> <span class="tlaGNC">          36 :     add_element!(net, base + 3, base + 7, T(7) * sf)</span></span>
-<span id="L128"><span class="lineNum">     128</span>              : </span>
-<span id="L129"><span class="lineNum">     129</span> <span class="tlaGNC">          36 :     leaves = (base + 4, base + 5, base + 6, base + 7)</span></span>
-<span id="L130"><span class="lineNum">     130</span> <span class="tlaGNC">          36 :     probes = (daughter11 + T(0.3) * (daughter11 - daughter1),</span></span>
-<span id="L131"><span class="lineNum">     131</span>              :               daughter12 + T(0.3) * (daughter12 - daughter1),</span>
-<span id="L132"><span class="lineNum">     132</span>              :               daughter21 + T(0.3) * (daughter21 - daughter2),</span>
-<span id="L133"><span class="lineNum">     133</span>              :               daughter22 + T(0.3) * (daughter22 - daughter2))</span>
-<span id="L134"><span class="lineNum">     134</span> <span class="tlaGNC">          36 :     search_upto = nvertices(net) - exclude_count</span></span>
-<span id="L135"><span class="lineNum">     135</span> <span class="tlaGNC">          36 :     for (leaf, probe) in zip(leaves, probes)</span></span>
-<span id="L136"><span class="lineNum">     136</span> <span class="tlaGNC">         144 :         closest = nearest_vertex(net, probe, search_upto)</span></span>
-<span id="L137"><span class="lineNum">     137</span> <span class="tlaGNC">         144 :         push!(connecting, closest)</span></span>
-<span id="L138"><span class="lineNum">     138</span> <span class="tlaGNC">         144 :         add_element!(net, leaf, closest, T(7) * sf)</span></span>
-<span id="L139"><span class="lineNum">     139</span> <span class="tlaGNC">         252 :     end</span></span>
-<span id="L140"><span class="lineNum">     140</span>              : </span>
-<span id="L141"><span class="lineNum">     141</span> <span class="tlaGNC">          36 :     set_bc!(net, base, Inlet, 1e-3)</span></span>
-<span id="L142"><span class="lineNum">     142</span> <span class="tlaGNC">          36 :     return nothing</span></span>
-<span id="L143"><span class="lineNum">     143</span>              : end</span>
-<span id="L144"><span class="lineNum">     144</span>              : </span>
-<span id="L145"><span class="lineNum">     145</span>              : #--------------------------------------------------------------------------------# Radius widening</span>
+<span id="L33"><span class="lineNum">      33</span>              : The first vertex is tagged [`Outlet`](@ref) (pressure boundary condition). The capillary</span>
+<span id="L34"><span class="lineNum">      34</span>              : vertices the cross-links attach to are appended to `connecting`.</span>
+<span id="L35"><span class="lineNum">      35</span>              : </span>
+<span id="L36"><span class="lineNum">      36</span>              : ### Keyword Arguments</span>
+<span id="L37"><span class="lineNum">      37</span>              : - `start`, `finish`: trunk endpoints. Default to the `Cube` domain's placement; the</span>
+<span id="L38"><span class="lineNum">      38</span>              :   [`HalfSphere`](@ref) domain passes endpoints that pierce the curved surface.</span>
+<span id="L39"><span class="lineNum">      39</span>              : - `tag_distal_inlet`: when `true` (default), the deep end is tagged [`InletVenule`](@ref)</span>
+<span id="L40"><span class="lineNum">      40</span>              :   (a prescribed venous inflow). Set `false` for a single-outlet venule, leaving the deep</span>
+<span id="L41"><span class="lineNum">      41</span>              :   end an `Interior` capillary-end stub.</span>
+<span id="L42"><span class="lineNum">      42</span>              : &quot;&quot;&quot;</span>
+<span id="L43"><span class="lineNum">      43</span> <span class="tlaGNC">          72 : function add_venule!(net::VascularNetwork{T}, rng::AbstractRNG, cfg::NetworkConfig{T},</span></span>
+<span id="L44"><span class="lineNum">      44</span>              :                      a::T, connecting::Vector{Int};</span>
+<span id="L45"><span class="lineNum">      45</span>              :                      start::SVector{3,T}=2 .* SVector{3,T}(0, -5, 0),</span>
+<span id="L46"><span class="lineNum">      46</span>              :                      finish::SVector{3,T}=2 .* SVector{3,T}(100, -5,</span>
+<span id="L47"><span class="lineNum">      47</span>              :                          0.5 * cfg.num_layers * (cfg.layer_spacing_fraction * cfg.region_size) - 5),</span>
+<span id="L48"><span class="lineNum">      48</span>              :                      tag_distal_inlet::Bool=true) where {T}</span>
+<span id="L49"><span class="lineNum">      49</span> <span class="tlaGNC">          36 :     nverts = 11</span></span>
+<span id="L50"><span class="lineNum">      50</span> <span class="tlaGNC">          36 :     base = nvertices(net) + 1</span></span>
+<span id="L51"><span class="lineNum">      51</span> <span class="tlaGNC">          36 :     capillary_count = nvertices(net)</span></span>
+<span id="L52"><span class="lineNum">      52</span> <span class="tlaGNC">          36 :     σ = T(0.1) * a</span></span>
+<span id="L53"><span class="lineNum">      53</span> <span class="tlaGNC">          36 :     for i in 0:nverts-1</span></span>
+<span id="L54"><span class="lineNum">      54</span> <span class="tlaGNC">         396 :         p = start + (finish - start) * T(i / nverts)</span></span>
+<span id="L55"><span class="lineNum">      55</span> <span class="tlaGNC">         398 :         p += σ .* SVector{3,T}(_randn(rng, T), _randn(rng, T), _randn(rng, T))</span></span>
+<span id="L56"><span class="lineNum">      56</span> <span class="tlaGNC">         396 :         add_vertex!(net, p)</span></span>
+<span id="L57"><span class="lineNum">      57</span> <span class="tlaGNC">         756 :     end</span></span>
+<span id="L58"><span class="lineNum">      58</span>              : </span>
+<span id="L59"><span class="lineNum">      59</span> <span class="tlaGNC">          36 :     set_bc!(net, base, Outlet, 2000)</span></span>
+<span id="L60"><span class="lineNum">      60</span> <span class="tlaGNC">          36 :     tag_distal_inlet &amp;&amp; set_bc!(net, base + nverts - 1, InletVenule, 1e-3)</span></span>
+<span id="L61"><span class="lineNum">      61</span>              : </span>
+<span id="L62"><span class="lineNum">      62</span> <span class="tlaGNC">          36 :     sf = cfg.scale_factor_venule</span></span>
+<span id="L63"><span class="lineNum">      63</span> <span class="tlaGNC">          36 :     venule_radius = T(20) * sf</span></span>
+<span id="L64"><span class="lineNum">      64</span> <span class="tlaGNC">          36 :     for i in 0:nverts-2</span></span>
+<span id="L65"><span class="lineNum">      65</span> <span class="tlaGNC">         371 :         add_element!(net, base + i, base + i + 1, venule_radius + T(0.1) * _randn(rng, T))</span></span>
+<span id="L66"><span class="lineNum">      66</span> <span class="tlaGNC">         360 :         iseven(i) &amp;&amp; (venule_radius -= T(1.5) * sf)</span></span>
+<span id="L67"><span class="lineNum">      67</span> <span class="tlaGNC">         684 :     end</span></span>
+<span id="L68"><span class="lineNum">      68</span>              : </span>
+<span id="L69"><span class="lineNum">      69</span> <span class="tlaGNC">          36 :     for i in 1:2:nverts-1</span></span>
+<span id="L70"><span class="lineNum">      70</span> <span class="tlaGNC">         180 :         vertex = base + i</span></span>
+<span id="L71"><span class="lineNum">      71</span> <span class="tlaGNC">         180 :         closest = nearest_vertex(net, net.vertices[vertex], capillary_count)</span></span>
+<span id="L72"><span class="lineNum">      72</span> <span class="tlaGNC">         180 :         push!(connecting, closest)</span></span>
+<span id="L73"><span class="lineNum">      73</span> <span class="tlaGNC">         193 :         add_element!(net, vertex, closest, T(7) * sf + T(0.5) * _randn(rng, T))</span></span>
+<span id="L74"><span class="lineNum">      74</span> <span class="tlaGNC">         324 :     end</span></span>
+<span id="L75"><span class="lineNum">      75</span> <span class="tlaGNC">          36 :     return nothing</span></span>
+<span id="L76"><span class="lineNum">      76</span>              : end</span>
+<span id="L77"><span class="lineNum">      77</span>              : </span>
+<span id="L78"><span class="lineNum">      78</span>              : #--------------------------------------------------------------------------------# Arteriole</span>
+<span id="L79"><span class="lineNum">      79</span>              : </span>
+<span id="L80"><span class="lineNum">      80</span>              : &quot;&quot;&quot;</span>
+<span id="L81"><span class="lineNum">      81</span>              :     add_arteriole!(net, rng, cfg, connecting; kwargs...)</span>
+<span id="L82"><span class="lineNum">      82</span>              : </span>
+<span id="L83"><span class="lineNum">      83</span>              : Append a feeding arteriole: a trunk that bifurcates twice into a binary tree of 8</span>
+<span id="L84"><span class="lineNum">      84</span>              : vertices, whose 4 leaves are each connected to the nearest existing vertex outside the</span>
+<span id="L85"><span class="lineNum">      85</span>              : arteriole trees.</span>
+<span id="L86"><span class="lineNum">      86</span>              : </span>
+<span id="L87"><span class="lineNum">      87</span>              : The trunk start is tagged [`Inlet`](@ref) (velocity boundary condition). The vertices the</span>
+<span id="L88"><span class="lineNum">      88</span>              : leaves attach to are appended to `connecting`.</span>
+<span id="L89"><span class="lineNum">      89</span>              : </span>
+<span id="L90"><span class="lineNum">      90</span>              : ### Keyword Arguments</span>
+<span id="L91"><span class="lineNum">      91</span>              : - `start`, `finish`: trunk endpoints.</span>
+<span id="L92"><span class="lineNum">      92</span>              : - `trunk_radius`: radius of the trunk element.</span>
+<span id="L93"><span class="lineNum">      93</span>              : - `o1`, `o2`: offsets from `finish` to the first-generation daughters.</span>
+<span id="L94"><span class="lineNum">      94</span>              : - `o11`, `o12`: offsets from the first daughter to its two children.</span>
+<span id="L95"><span class="lineNum">      95</span>              : - `o21`, `o22`: offsets from the second daughter to its two children.</span>
+<span id="L96"><span class="lineNum">      96</span>              : - `exclude_count`: number of trailing vertices excluded from the nearest-vertex search</span>
+<span id="L97"><span class="lineNum">      97</span>              :   (the arteriole's own vertices, and those of any earlier arteriole).</span>
+<span id="L98"><span class="lineNum">      98</span>              : &quot;&quot;&quot;</span>
+<span id="L99"><span class="lineNum">      99</span> <span class="tlaGNC">         106 : function add_arteriole!(net::VascularNetwork{T}, rng::AbstractRNG, cfg::NetworkConfig{T},</span></span>
+<span id="L100"><span class="lineNum">     100</span>              :                         connecting::Vector{Int};</span>
+<span id="L101"><span class="lineNum">     101</span>              :                         start::SVector{3,T}, finish::SVector{3,T},</span>
+<span id="L102"><span class="lineNum">     102</span>              :                         trunk_radius::Real,</span>
+<span id="L103"><span class="lineNum">     103</span>              :                         o1::SVector{3,T}, o2::SVector{3,T},</span>
+<span id="L104"><span class="lineNum">     104</span>              :                         o11::SVector{3,T}, o12::SVector{3,T},</span>
+<span id="L105"><span class="lineNum">     105</span>              :                         o21::SVector{3,T}, o22::SVector{3,T},</span>
+<span id="L106"><span class="lineNum">     106</span>              :                         exclude_count::Integer) where {T}</span>
+<span id="L107"><span class="lineNum">     107</span> <span class="tlaGNC">          53 :     sf = cfg.scale_factor_arteriole</span></span>
+<span id="L108"><span class="lineNum">     108</span> <span class="tlaGNC">          53 :     base = nvertices(net) + 1</span></span>
+<span id="L109"><span class="lineNum">     109</span>              : </span>
+<span id="L110"><span class="lineNum">     110</span> <span class="tlaGNC">          53 :     add_vertex!(net, start)</span></span>
+<span id="L111"><span class="lineNum">     111</span> <span class="tlaGNC">          53 :     add_vertex!(net, finish)</span></span>
+<span id="L112"><span class="lineNum">     112</span> <span class="tlaGNC">          53 :     add_element!(net, base, base + 1, trunk_radius)</span></span>
+<span id="L113"><span class="lineNum">     113</span>              : </span>
+<span id="L114"><span class="lineNum">     114</span> <span class="tlaGNC">          53 :     daughter1 = finish + o1</span></span>
+<span id="L115"><span class="lineNum">     115</span> <span class="tlaGNC">          53 :     daughter2 = finish + o2</span></span>
+<span id="L116"><span class="lineNum">     116</span> <span class="tlaGNC">          53 :     add_vertex!(net, daughter1)</span></span>
+<span id="L117"><span class="lineNum">     117</span> <span class="tlaGNC">          53 :     add_vertex!(net, daughter2)</span></span>
+<span id="L118"><span class="lineNum">     118</span> <span class="tlaGNC">          53 :     add_element!(net, base + 1, base + 2, T(10) * sf)</span></span>
+<span id="L119"><span class="lineNum">     119</span> <span class="tlaGNC">          53 :     add_element!(net, base + 1, base + 3, T(10) * sf)</span></span>
+<span id="L120"><span class="lineNum">     120</span>              : </span>
+<span id="L121"><span class="lineNum">     121</span> <span class="tlaGNC">          53 :     daughter11 = daughter1 + o11</span></span>
+<span id="L122"><span class="lineNum">     122</span> <span class="tlaGNC">          53 :     daughter12 = daughter1 + o12</span></span>
+<span id="L123"><span class="lineNum">     123</span> <span class="tlaGNC">          53 :     add_vertex!(net, daughter11)</span></span>
+<span id="L124"><span class="lineNum">     124</span> <span class="tlaGNC">          53 :     add_vertex!(net, daughter12)</span></span>
+<span id="L125"><span class="lineNum">     125</span> <span class="tlaGNC">          53 :     add_element!(net, base + 2, base + 4, T(7) * sf)</span></span>
+<span id="L126"><span class="lineNum">     126</span> <span class="tlaGNC">          53 :     add_element!(net, base + 2, base + 5, T(7) * sf)</span></span>
+<span id="L127"><span class="lineNum">     127</span>              : </span>
+<span id="L128"><span class="lineNum">     128</span> <span class="tlaGNC">          53 :     daughter21 = daughter2 + o21</span></span>
+<span id="L129"><span class="lineNum">     129</span> <span class="tlaGNC">          53 :     daughter22 = daughter2 + o22</span></span>
+<span id="L130"><span class="lineNum">     130</span> <span class="tlaGNC">          53 :     add_vertex!(net, daughter21)</span></span>
+<span id="L131"><span class="lineNum">     131</span> <span class="tlaGNC">          53 :     add_vertex!(net, daughter22)</span></span>
+<span id="L132"><span class="lineNum">     132</span> <span class="tlaGNC">          53 :     add_element!(net, base + 3, base + 6, T(7) * sf)</span></span>
+<span id="L133"><span class="lineNum">     133</span> <span class="tlaGNC">          53 :     add_element!(net, base + 3, base + 7, T(7) * sf)</span></span>
+<span id="L134"><span class="lineNum">     134</span>              : </span>
+<span id="L135"><span class="lineNum">     135</span> <span class="tlaGNC">          53 :     leaves = (base + 4, base + 5, base + 6, base + 7)</span></span>
+<span id="L136"><span class="lineNum">     136</span> <span class="tlaGNC">          53 :     probes = (daughter11 + T(0.3) * (daughter11 - daughter1),</span></span>
+<span id="L137"><span class="lineNum">     137</span>              :               daughter12 + T(0.3) * (daughter12 - daughter1),</span>
+<span id="L138"><span class="lineNum">     138</span>              :               daughter21 + T(0.3) * (daughter21 - daughter2),</span>
+<span id="L139"><span class="lineNum">     139</span>              :               daughter22 + T(0.3) * (daughter22 - daughter2))</span>
+<span id="L140"><span class="lineNum">     140</span> <span class="tlaGNC">          53 :     search_upto = nvertices(net) - exclude_count</span></span>
+<span id="L141"><span class="lineNum">     141</span> <span class="tlaGNC">          53 :     for (leaf, probe) in zip(leaves, probes)</span></span>
+<span id="L142"><span class="lineNum">     142</span> <span class="tlaGNC">         212 :         closest = nearest_vertex(net, probe, search_upto)</span></span>
+<span id="L143"><span class="lineNum">     143</span> <span class="tlaGNC">         212 :         push!(connecting, closest)</span></span>
+<span id="L144"><span class="lineNum">     144</span> <span class="tlaGNC">         212 :         add_element!(net, leaf, closest, T(7) * sf)</span></span>
+<span id="L145"><span class="lineNum">     145</span> <span class="tlaGNC">         371 :     end</span></span>
 <span id="L146"><span class="lineNum">     146</span>              : </span>
-<span id="L147"><span class="lineNum">     147</span>              : &quot;&quot;&quot;</span>
-<span id="L148"><span class="lineNum">     148</span>              :     enforce_min_radius!(net, connecting, cfg)</span>
-<span id="L149"><span class="lineNum">     149</span>              : </span>
-<span id="L150"><span class="lineNum">     150</span>              : Widen every element incident to a vertex in `connecting` to at least</span>
-<span id="L151"><span class="lineNum">     151</span>              : `5 * scale_factor_arteriole`, so capillaries feeding the arteriole and venule trees are not</span>
-<span id="L152"><span class="lineNum">     152</span>              : unrealistically thin.</span>
+<span id="L147"><span class="lineNum">     147</span> <span class="tlaGNC">          53 :     set_bc!(net, base, Inlet, 1e-3)</span></span>
+<span id="L148"><span class="lineNum">     148</span> <span class="tlaGNC">          53 :     return nothing</span></span>
+<span id="L149"><span class="lineNum">     149</span>              : end</span>
+<span id="L150"><span class="lineNum">     150</span>              : </span>
+<span id="L151"><span class="lineNum">     151</span>              : #--------------------------------------------------------------------------------# Radius widening</span>
+<span id="L152"><span class="lineNum">     152</span>              : </span>
 <span id="L153"><span class="lineNum">     153</span>              : &quot;&quot;&quot;</span>
-<span id="L154"><span class="lineNum">     154</span> <span class="tlaGNC">          19 : function enforce_min_radius!(net::VascularNetwork{T}, connecting::Vector{Int},</span></span>
-<span id="L155"><span class="lineNum">     155</span>              :                              cfg::NetworkConfig{T}) where {T}</span>
-<span id="L156"><span class="lineNum">     156</span> <span class="tlaGNC">          19 :     rmin = T(5) * cfg.scale_factor_arteriole</span></span>
-<span id="L157"><span class="lineNum">     157</span> <span class="tlaGNC">          19 :     for vertex in connecting</span></span>
-<span id="L158"><span class="lineNum">     158</span> <span class="tlaGNC">         223 :         for (e, element) in enumerate(net.elements)</span></span>
-<span id="L159"><span class="lineNum">     159</span> <span class="tlaGNC">      522435 :             if (element[1] == vertex || element[2] == vertex) &amp;&amp; net.radii[e] &lt; rmin</span></span>
-<span id="L160"><span class="lineNum">     160</span> <span class="tlaGNC">         533 :                 net.radii[e] = rmin</span></span>
-<span id="L161"><span class="lineNum">     161</span>              :             end</span>
-<span id="L162"><span class="lineNum">     162</span> <span class="tlaGNC">     1044647 :         end</span></span>
-<span id="L163"><span class="lineNum">     163</span> <span class="tlaGNC">         223 :     end</span></span>
-<span id="L164"><span class="lineNum">     164</span> <span class="tlaGNC">          19 :     return nothing</span></span>
-<span id="L165"><span class="lineNum">     165</span>              : end</span>
+<span id="L154"><span class="lineNum">     154</span>              :     enforce_min_radius!(net, connecting, cfg)</span>
+<span id="L155"><span class="lineNum">     155</span>              : </span>
+<span id="L156"><span class="lineNum">     156</span>              : Widen every element incident to a vertex in `connecting` to at least</span>
+<span id="L157"><span class="lineNum">     157</span>              : `5 * scale_factor_arteriole`, so capillaries feeding the arteriole and venule trees are not</span>
+<span id="L158"><span class="lineNum">     158</span>              : unrealistically thin.</span>
+<span id="L159"><span class="lineNum">     159</span>              : &quot;&quot;&quot;</span>
+<span id="L160"><span class="lineNum">     160</span> <span class="tlaGNC">          36 : function enforce_min_radius!(net::VascularNetwork{T}, connecting::Vector{Int},</span></span>
+<span id="L161"><span class="lineNum">     161</span>              :                              cfg::NetworkConfig{T}) where {T}</span>
+<span id="L162"><span class="lineNum">     162</span> <span class="tlaGNC">          36 :     rmin = T(5) * cfg.scale_factor_arteriole</span></span>
+<span id="L163"><span class="lineNum">     163</span> <span class="tlaGNC">          36 :     for vertex in connecting</span></span>
+<span id="L164"><span class="lineNum">     164</span> <span class="tlaGNC">         376 :         for (e, element) in enumerate(net.elements)</span></span>
+<span id="L165"><span class="lineNum">     165</span> <span class="tlaGNC">      705297 :             if (element[1] == vertex || element[2] == vertex) &amp;&amp; net.radii[e] &lt; rmin</span></span>
+<span id="L166"><span class="lineNum">     166</span> <span class="tlaGNC">         738 :                 net.radii[e] = rmin</span></span>
+<span id="L167"><span class="lineNum">     167</span>              :             end</span>
+<span id="L168"><span class="lineNum">     168</span> <span class="tlaGNC">     1410218 :         end</span></span>
+<span id="L169"><span class="lineNum">     169</span> <span class="tlaGNC">         376 :     end</span></span>
+<span id="L170"><span class="lineNum">     170</span> <span class="tlaGNC">          36 :     return nothing</span></span>
+<span id="L171"><span class="lineNum">     171</span>              : end</span>
         </pre>
               </td>
             </tr>

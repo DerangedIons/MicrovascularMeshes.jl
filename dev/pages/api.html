@@ -255,33 +255,72 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="types" class="level2">
 <h2 class="anchored" data-anchor-id="types">Types</h2>
 <div class="card mb-3">
+<section id="abstractdomain" class="level4 card-header api-item-header">
+<h4 class="anchored" data-anchor-id="abstractdomain"><code>AbstractDomain</code></h4>
+</section>
+<div class="card-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>AbstractDomain</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Supertype for the bounding region a network is generated in. The concrete domain a <a href="@ref"><code>NetworkConfig</code></a> carries selects which construction <a href="@ref"><code>generate_network</code></a> runs.</p>
+<p>Subtypes: <a href="@ref"><code>Cube</code></a>, <a href="@ref"><code>HalfSphere</code></a>.</p>
+</div>
+</div>
+<div class="card mb-3">
+<section id="cube" class="level4 card-header api-item-header">
+<h4 class="anchored" data-anchor-id="cube"><code>Cube</code></h4>
+</section>
+<div class="card-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Cube</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Cube/box domain: the capillary bed is a Voronoi graph over a square footprint of side <code>region_size</code>, extruded into uniform stacked layers. The default domain.</p>
+<section id="examples" class="level3">
+<h3 class="anchored" data-anchor-id="examples">Examples</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">generate_network</span>(<span class="fu">NetworkConfig</span>(domain <span class="op">=</span> <span class="fu">Cube</span>()))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</div>
+</div>
+<div class="card mb-3">
+<section id="halfsphere" class="level4 card-header api-item-header">
+<h4 class="anchored" data-anchor-id="halfsphere"><code>HalfSphere</code></h4>
+</section>
+<div class="card-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">HalfSphere</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Solid-hemisphere domain <code>{x² + y² + z² ≤ R², z ≥ 0}</code> of radius <code>R = sphere_radius</code>: the capillary bed fills a stack of shrinking disks from the flat equatorial face (<code>z = 0</code>, radius <code>R</code>) up to the apex, and the feeding/draining vessels enter through the curved dome surface. On this domain <code>num_layers</code> acts as an upper bound — the effective layer count is limited by the geometry (<code>⌊R / dz⌋ + 1</code>).</p>
+<section id="examples-1" class="level3">
+<h3 class="anchored" data-anchor-id="examples-1">Examples</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">generate_network</span>(<span class="fu">NetworkConfig</span>(domain <span class="op">=</span> <span class="fu">HalfSphere</span>(), sphere_radius <span class="op">=</span> <span class="fl">120.0</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</div>
+</div>
+<div class="card mb-3">
 <section id="networkconfig" class="level4 card-header api-item-header">
 <h4 class="anchored" data-anchor-id="networkconfig"><code>NetworkConfig</code></h4>
 </section>
 <div class="card-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">NetworkConfig</span><span class="dt">{T}</span>(; kwargs<span class="op">...</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">NetworkConfig</span>(; kwargs<span class="op">...</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">NetworkConfig</span><span class="dt">{T}</span>(; kwargs<span class="op">...</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">NetworkConfig</span>(; kwargs<span class="op">...</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Parameters controlling <a href="@ref"><code>generate_network</code></a>, parametric over the floating-point element type <code>T</code> (default <code>Float64</code>). All keyword arguments have defaults matching the reference idealized network.</p>
 <p>Select a non-default precision through the type parameter, e.g.&nbsp;<code>NetworkConfig{Float32}(; num_fibers = 60)</code>. The bare <code>NetworkConfig(; kwargs...)</code> form always yields <code>NetworkConfig{Float64}</code> — it cannot infer <code>T</code> from the keywords.</p>
 <section id="keyword-arguments" class="level3">
 <h3 class="anchored" data-anchor-id="keyword-arguments">Keyword Arguments</h3>
 <ul>
 <li><code>num_fibers</code>: target number of Voronoi seed cells; controls capillary mesh density.</li>
-<li><code>region_size</code>: side length of the square region the capillary mesh covers.</li>
+<li><code>region_size</code>: side length of the square region the capillary mesh covers (<code>Cube</code>).</li>
 <li><code>random_perturbation</code>: stddev of the hex-grid jitter, as a fraction of the grid pitch.</li>
-<li><code>num_layers</code>: number of stacked layers the planar mesh is extruded into.</li>
-<li><code>layer_spacing_fraction</code>: spacing between extrusion layers, as a fraction of <code>region_size</code>.</li>
+<li><code>num_layers</code>: number of stacked layers the planar mesh is extruded into. On <a href="@ref"><code>HalfSphere</code></a> this is an upper bound; the effective count is geometry-limited.</li>
+<li><code>layer_spacing_fraction</code>: spacing between extrusion layers, as a fraction of the domain’s characteristic size (<code>region_size</code> for <code>Cube</code>, <code>sphere_radius</code> for <code>HalfSphere</code>).</li>
 <li><code>drop_fraction_hex_grid</code>: fraction of horizontal (inter-layer) edges dropped per layer.</li>
 <li><code>radius_default_small_vessels</code>: median capillary radius (lognormal location).</li>
 <li><code>radius_stddev_small_vessels</code>: lognormal shape parameter of the capillary radius.</li>
 <li><code>scale_factor_venule</code>: multiplies every venule radius.</li>
 <li><code>scale_factor_arteriole</code>: multiplies every arteriole radius.</li>
+<li><code>domain</code>: the bounding region, an <a href="@ref"><code>AbstractDomain</code></a> (<a href="@ref"><code>Cube</code></a> default or <a href="@ref"><code>HalfSphere</code></a>); selects which construction <a href="@ref"><code>generate_network</code></a> runs.</li>
+<li><code>sphere_radius</code>: hemisphere radius <code>R</code>, used only on the <a href="@ref"><code>HalfSphere</code></a> domain.</li>
 </ul>
 </section>
-<section id="examples" class="level3">
-<h3 class="anchored" data-anchor-id="examples">Examples</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>cfg <span class="op">=</span> <span class="fu">NetworkConfig</span>(num_fibers <span class="op">=</span> <span class="fl">60</span>, num_layers <span class="op">=</span> <span class="fl">25</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>cfg32 <span class="op">=</span> <span class="fu">NetworkConfig</span><span class="dt">{Float32}</span>(num_fibers <span class="op">=</span> <span class="fl">60</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="examples-2" class="level3">
+<h3 class="anchored" data-anchor-id="examples-2">Examples</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>cfg <span class="op">=</span> <span class="fu">NetworkConfig</span>(num_fibers <span class="op">=</span> <span class="fl">60</span>, num_layers <span class="op">=</span> <span class="fl">25</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>cfg32 <span class="op">=</span> <span class="fu">NetworkConfig</span><span class="dt">{Float32}</span>(num_fibers <span class="op">=</span> <span class="fl">60</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>dome <span class="op">=</span> <span class="fu">NetworkConfig</span>(domain <span class="op">=</span> <span class="fu">HalfSphere</span>(), sphere_radius <span class="op">=</span> <span class="fl">120.0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 </div>
 </div>
@@ -290,7 +329,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 class="anchored" data-anchor-id="nodetag"><code>NodeTag</code></h4>
 </section>
 <div class="card-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>NodeTag</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>NodeTag</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Boundary role of a network vertex. Determines whether (and what kind of) a boundary condition applies to the node.</p>
 <ul>
 <li><code>Interior</code> — interior node, no boundary condition.</li>
@@ -306,7 +345,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 class="anchored" data-anchor-id="vascularnetwork"><code>VascularNetwork</code></h4>
 </section>
 <div class="card-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>VascularNetwork{T}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>VascularNetwork{T}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>A 3D vascular network as a graph of line elements, parametric over the floating-point element type <code>T</code>.</p>
 <section id="fields" class="level3">
 <h3 class="anchored" data-anchor-id="fields">Fields</h3>
@@ -328,21 +367,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 class="anchored" data-anchor-id="generate_network"><code>generate_network</code></h4>
 </section>
 <div class="card-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">generate_network</span>([rng], cfg <span class="op">=</span> <span class="fu">NetworkConfig</span>()) <span class="op">-&gt;</span> VascularNetwork</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">generate_network</span>([rng], cfg <span class="op">=</span> <span class="fu">NetworkConfig</span>()) <span class="op">-&gt;</span> VascularNetwork</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Generate a synthetic idealized myocardial microvascular network.</p>
-<p>The construction proceeds in four stages:</p>
+<p>The bounding region is selected by <code>cfg.domain</code> (an <a href="@ref"><code>AbstractDomain</code></a>). Both domains share the same construction in four stages:</p>
 <ol type="1">
 <li>A jittered hexagonal point set is tessellated and the in-region Voronoi edges form a planar capillary graph.</li>
 <li>That graph is extruded into a stacked 3D capillary mesh.</li>
-<li>The top and bottom layers are tagged as no-flow boundaries.</li>
-<li>One draining venule and two feeding arterioles are appended and connected to the capillary mesh; capillaries feeding the trees are widened.</li>
+<li>The bounding surfaces are tagged as no-flow boundaries.</li>
+<li>Feeding arteriole(s) and a draining venule are appended and connected to the capillary mesh; capillaries feeding the trees are widened.</li>
+<li>Capillaries left disconnected from the main network are pruned (see <a href="@ref"><code>prune_disconnected</code></a>).</li>
 </ol>
+<p>On <a href="@ref"><code>Cube</code></a> the footprint is a square and the mesh is a uniform slab; on <a href="@ref"><code>HalfSphere</code></a> the footprint is a disk and the mesh fills a dome whose feeding vessels pierce the curved surface.</p>
 <p>Pass an <code>rng</code> for reproducible output.</p>
-<section id="examples-1" class="level3">
-<h3 class="anchored" data-anchor-id="examples-1">Examples</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Random</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>net <span class="op">=</span> <span class="fu">generate_network</span>(<span class="fu">MersenneTwister</span>(<span class="fl">0</span>))</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>net <span class="op">=</span> <span class="fu">generate_network</span>(<span class="fu">NetworkConfig</span>(num_fibers <span class="op">=</span> <span class="fl">60</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="examples-3" class="level3">
+<h3 class="anchored" data-anchor-id="examples-3">Examples</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Random</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>net <span class="op">=</span> <span class="fu">generate_network</span>(<span class="fu">MersenneTwister</span>(<span class="fl">0</span>))</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>net <span class="op">=</span> <span class="fu">generate_network</span>(<span class="fu">NetworkConfig</span>(num_fibers <span class="op">=</span> <span class="fl">60</span>))</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>net <span class="op">=</span> <span class="fu">generate_network</span>(<span class="fu">NetworkConfig</span>(domain <span class="op">=</span> <span class="fu">HalfSphere</span>(), sphere_radius <span class="op">=</span> <span class="fl">120.0</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 </div>
 </div>
@@ -367,8 +409,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 class="anchored" data-anchor-id="plotnetwork"><code>plotnetwork</code></h4>
 </section>
 <div class="card-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotnetwork</span>(net; kwargs<span class="op">...</span>) <span class="op">-&gt;</span> Figure</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotnetwork!</span>(ax, net; kwargs<span class="op">...</span>) <span class="op">-&gt;</span> ax</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotnetwork</span>(net; kwargs<span class="op">...</span>) <span class="op">-&gt;</span> Figure</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotnetwork!</span>(ax, net; kwargs<span class="op">...</span>) <span class="op">-&gt;</span> ax</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Plot a <a href="@ref"><code>VascularNetwork</code></a> in 3D: vessels as line segments colored by radius, and boundary nodes highlighted by <a href="@ref"><code>NodeTag</code></a>.</p>
 <p>These functions are implemented by a package extension and require a Makie backend — load <code>GLMakie</code> (interactive) or <code>CairoMakie</code> (static) before calling them.</p>
 <section id="keyword-arguments-1" class="level3">
@@ -379,10 +421,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>show_nodes</code>: whether to scatter the boundary nodes (default <code>true</code>).</li>
 </ul>
 </section>
-<section id="examples-2" class="level3">
-<h3 class="anchored" data-anchor-id="examples-2">Examples</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">GLMakie</span>, <span class="bu">IdealizedMicrovasculature</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotnetwork</span>(<span class="fu">generate_network</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="examples-4" class="level3">
+<h3 class="anchored" data-anchor-id="examples-4">Examples</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">GLMakie</span>, <span class="bu">IdealizedMicrovasculature</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotnetwork</span>(<span class="fu">generate_network</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 </div>
 </div>
@@ -404,7 +446,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 class="anchored" data-anchor-id="inlet"><code>Inlet</code></h4>
 </section>
 <div class="card-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>NodeTag</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>NodeTag</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Boundary role of a network vertex. Determines whether (and what kind of) a boundary condition applies to the node.</p>
 <ul>
 <li><code>Interior</code> — interior node, no boundary condition.</li>
@@ -420,7 +462,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 class="anchored" data-anchor-id="inletvenule"><code>InletVenule</code></h4>
 </section>
 <div class="card-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>NodeTag</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>NodeTag</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Boundary role of a network vertex. Determines whether (and what kind of) a boundary condition applies to the node.</p>
 <ul>
 <li><code>Interior</code> — interior node, no boundary condition.</li>
@@ -436,7 +478,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 class="anchored" data-anchor-id="interior"><code>Interior</code></h4>
 </section>
 <div class="card-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>NodeTag</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>NodeTag</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Boundary role of a network vertex. Determines whether (and what kind of) a boundary condition applies to the node.</p>
 <ul>
 <li><code>Interior</code> — interior node, no boundary condition.</li>
@@ -452,7 +494,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 class="anchored" data-anchor-id="noflow"><code>NoFlow</code></h4>
 </section>
 <div class="card-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>NodeTag</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>NodeTag</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Boundary role of a network vertex. Determines whether (and what kind of) a boundary condition applies to the node.</p>
 <ul>
 <li><code>Interior</code> — interior node, no boundary condition.</li>
@@ -468,7 +510,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 class="anchored" data-anchor-id="outlet"><code>Outlet</code></h4>
 </section>
 <div class="card-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>NodeTag</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>NodeTag</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Boundary role of a network vertex. Determines whether (and what kind of) a boundary condition applies to the node.</p>
 <ul>
 <li><code>Interior</code> — interior node, no boundary condition.</li>

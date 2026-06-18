@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - on branch main - src/src/domains.jl</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="title">LCOV - code coverage report</td></tr>
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+            <tr>
+              <td width="100%">
+                <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="10%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">src/src</a> - domains.jl<span style="font-size: 80%;"> (source / <a href="domains.jl.func-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%" class="headerCovTableHead">Coverage</td>
+            <td width="5%" class="headerCovTableHead" title="Covered + Uncovered code">Total</td>
+            <td width="5%" class="headerCovTableHead" title="Exercised code only">Hit</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">on branch main</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntryHi">100.0&nbsp;%</td>
+            <td class="headerCovTableEntry">11</td>
+            <td class="headerCovTableEntry">11</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test Date:</td>
+            <td class="headerValue">2026-06-18 21:36:20</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntryHi">-</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+          </tr>
+                  <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+          </table>
+
+          <table cellpadding=0 cellspacing=0 border=0>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>
+<pre class="sourceHeading">            Line data    Source code</pre>
+<pre class="source">
+<span id="L1"><span class="lineNum">       1</span>              : #--------------------------------------------------------------------------------# Domains</span>
+<span id="L2"><span class="lineNum">       2</span>              : </span>
+<span id="L3"><span class="lineNum">       3</span>              : &quot;&quot;&quot;</span>
+<span id="L4"><span class="lineNum">       4</span>              :     AbstractDomain</span>
+<span id="L5"><span class="lineNum">       5</span>              : </span>
+<span id="L6"><span class="lineNum">       6</span>              : Supertype for the bounding region a network is generated in. The concrete domain a</span>
+<span id="L7"><span class="lineNum">       7</span>              : [`NetworkConfig`](@ref) carries selects which construction [`generate_network`](@ref)</span>
+<span id="L8"><span class="lineNum">       8</span>              : runs.</span>
+<span id="L9"><span class="lineNum">       9</span>              : </span>
+<span id="L10"><span class="lineNum">      10</span>              : Subtypes: [`Cube`](@ref), [`HalfSphere`](@ref).</span>
+<span id="L11"><span class="lineNum">      11</span>              : &quot;&quot;&quot;</span>
+<span id="L12"><span class="lineNum">      12</span>              : abstract type AbstractDomain end</span>
+<span id="L13"><span class="lineNum">      13</span>              : </span>
+<span id="L14"><span class="lineNum">      14</span>              : &quot;&quot;&quot;</span>
+<span id="L15"><span class="lineNum">      15</span>              :     Cube()</span>
+<span id="L16"><span class="lineNum">      16</span>              : </span>
+<span id="L17"><span class="lineNum">      17</span>              : Cube/box domain: the capillary bed is a Voronoi graph over a square footprint of side</span>
+<span id="L18"><span class="lineNum">      18</span>              : `region_size`, extruded into uniform stacked layers. The default domain.</span>
+<span id="L19"><span class="lineNum">      19</span>              : </span>
+<span id="L20"><span class="lineNum">      20</span>              : ### Examples</span>
+<span id="L21"><span class="lineNum">      21</span>              : ```julia</span>
+<span id="L22"><span class="lineNum">      22</span>              : generate_network(NetworkConfig(domain = Cube()))</span>
+<span id="L23"><span class="lineNum">      23</span>              : ```</span>
+<span id="L24"><span class="lineNum">      24</span>              : &quot;&quot;&quot;</span>
+<span id="L25"><span class="lineNum">      25</span> <span class="tlaGNC tlaBgGNC">          29 : struct Cube &lt;: AbstractDomain end</span></span>
+<span id="L26"><span class="lineNum">      26</span>              : </span>
+<span id="L27"><span class="lineNum">      27</span>              : &quot;&quot;&quot;</span>
+<span id="L28"><span class="lineNum">      28</span>              :     HalfSphere()</span>
+<span id="L29"><span class="lineNum">      29</span>              : </span>
+<span id="L30"><span class="lineNum">      30</span>              : Solid-hemisphere domain `{x² + y² + z² ≤ R², z ≥ 0}` of radius `R = sphere_radius`: the</span>
+<span id="L31"><span class="lineNum">      31</span>              : capillary bed fills a stack of shrinking disks from the flat equatorial face (`z = 0`,</span>
+<span id="L32"><span class="lineNum">      32</span>              : radius `R`) up to the apex, and the feeding/draining vessels enter through the curved</span>
+<span id="L33"><span class="lineNum">      33</span>              : dome surface. On this domain `num_layers` acts as an upper bound — the effective layer</span>
+<span id="L34"><span class="lineNum">      34</span>              : count is limited by the geometry (`⌊R / dz⌋ + 1`).</span>
+<span id="L35"><span class="lineNum">      35</span>              : </span>
+<span id="L36"><span class="lineNum">      36</span>              : ### Examples</span>
+<span id="L37"><span class="lineNum">      37</span>              : ```julia</span>
+<span id="L38"><span class="lineNum">      38</span>              : generate_network(NetworkConfig(domain = HalfSphere(), sphere_radius = 120.0))</span>
+<span id="L39"><span class="lineNum">      39</span>              : ```</span>
+<span id="L40"><span class="lineNum">      40</span>              : &quot;&quot;&quot;</span>
+<span id="L41"><span class="lineNum">      41</span> <span class="tlaGNC">          19 : struct HalfSphere &lt;: AbstractDomain end</span></span>
+<span id="L42"><span class="lineNum">      42</span>              : </span>
+<span id="L43"><span class="lineNum">      43</span>              : #--------------------------------------------------------------------------------# Geometry helpers</span>
+<span id="L44"><span class="lineNum">      44</span>              : </span>
+<span id="L45"><span class="lineNum">      45</span>              : # Radius of the dome's circular cross-section at height z, i.e. √(R² − z²) clamped to 0</span>
+<span id="L46"><span class="lineNum">      46</span>              : # above the apex. Used to clip each extrusion layer of the half-sphere.</span>
+<span id="L47"><span class="lineNum">      47</span> <span class="tlaGNC">         285 : dome_radius(R::T, z::Real) where {T} = sqrt(max(R^2 - T(z)^2, zero(T)))</span></span>
+<span id="L48"><span class="lineNum">      48</span>              : </span>
+<span id="L49"><span class="lineNum">      49</span>              : # Hexagonal-lattice pitch that tiles `area` with about `num_fibers` Voronoi cells. The</span>
+<span id="L50"><span class="lineNum">      50</span>              : # cube derives its pitch from a square (`area = region_size²`); the half-sphere passes</span>
+<span id="L51"><span class="lineNum">      51</span>              : # the disk area `πR²` so `num_fibers` keeps its meaning of &quot;number of capillary cells&quot;.</span>
+<span id="L52"><span class="lineNum">      52</span> <span class="tlaGNC">          23 : hex_pitch_for_area(area::T, num_fibers::Integer) where {T} =</span></span>
+<span id="L53"><span class="lineNum">      53</span>              :     sqrt(area) / T(sqrt(3 / 2 * sqrt(3) * num_fibers))</span>
+<span id="L54"><span class="lineNum">      54</span>              : </span>
+<span id="L55"><span class="lineNum">      55</span>              : # Orthonormal frame on the sphere at polar angle θ (from +z) and azimuth φ: outward radial</span>
+<span id="L56"><span class="lineNum">      56</span>              : # normal n̂ plus azimuthal (t̂₁) and polar (t̂₂) tangents. Used to place half-sphere I/O</span>
+<span id="L57"><span class="lineNum">      57</span>              : # trunks that pierce the curved surface along n̂ and fan their branches along the tangents.</span>
+<span id="L58"><span class="lineNum">      58</span> <span class="tlaGNC">           2 : function dome_frame(::Type{T}, θ::Real, φ::Real) where {T}</span></span>
+<span id="L59"><span class="lineNum">      59</span> <span class="tlaGNC">          36 :     sθ, cθ = sincos(T(θ))</span></span>
+<span id="L60"><span class="lineNum">      60</span> <span class="tlaGNC">          36 :     sφ, cφ = sincos(T(φ))</span></span>
+<span id="L61"><span class="lineNum">      61</span> <span class="tlaGNC">          36 :     n = SVector{3,T}(sθ * cφ, sθ * sφ, cθ)</span></span>
+<span id="L62"><span class="lineNum">      62</span> <span class="tlaGNC">          36 :     t1 = SVector{3,T}(-sφ, cφ, zero(T))</span></span>
+<span id="L63"><span class="lineNum">      63</span> <span class="tlaGNC">          36 :     t2 = SVector{3,T}(cθ * cφ, cθ * sφ, -sθ)</span></span>
+<span id="L64"><span class="lineNum">      64</span> <span class="tlaGNC">          36 :     return n, t1, t2</span></span>
+<span id="L65"><span class="lineNum">      65</span>              : end</span>
+        </pre>
+              </td>
+            </tr>
+          </table>
+          <br>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+            <tr><td class="versionInfo">Generated by: <a href="https://github.com//linux-test-project/lcov" target="_parent">LCOV version 2.0-1</a></td></tr>
+          </table>
+          <br>
+
+</body>
+</html>
