@@ -24,6 +24,10 @@ using IdealizedMicrovasculature
 net = generate_network(MersenneTwister(0))
 @info "Generated network" vertices = nvertices(net) elements = nelements(net)
 
+# Replace the straight segments with organically curved vessels.
+net = smooth_network(MersenneTwister(0), net)
+@info "Smoothed network" vertices = nvertices(net) elements = nelements(net)
+
 # Vessels colored by radius; arteriole inlets (crimson), venule outlet (blue),
 # venule inlet (orange) and no-flow layers (gray) are highlighted.
 fig = plotnetwork(net)
