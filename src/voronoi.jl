@@ -10,6 +10,9 @@ end
 # `randn(rng, T)` is undefined for non-`AbstractFloat` reals, `convert` is not.
 _randn(rng::AbstractRNG, ::Type{T}) where {T<:Real} = convert(T, randn(rng))
 
+# Uniform-[0,1) draw converted to the element type `T`, for the same reason.
+_rand(rng::AbstractRNG, ::Type{T}) where {T<:Real} = convert(T, rand(rng))
+
 # Lay two interleaved rectangular grids (a hexagonal lattice) over the coordinate lines
 # `x`,`y` with pitch `a`, then jitter every point by Gaussian noise of stddev `σ`. The
 # domain-specific seeders below differ only in the coordinate lines and pitch they pass.

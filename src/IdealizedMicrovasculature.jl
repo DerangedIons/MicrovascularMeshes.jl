@@ -1,13 +1,13 @@
 module IdealizedMicrovasculature
 
-using Random: AbstractRNG, default_rng, randn, randperm
-using LinearAlgebra: norm
+using Random: AbstractRNG, default_rng, rand, randn, randperm
+using LinearAlgebra: cross, dot, norm
 using StaticArrays: SVector
 import DelaunayTriangulation as DT
 
 export NodeTag, Interior, NoFlow, Inlet, Outlet, InletVenule
 export AbstractDomain, Cube, HalfSphere
-export NetworkConfig, VascularNetwork, generate_network
+export NetworkConfig, VascularNetwork, generate_network, smooth_network
 export nvertices, nelements
 export plotnetwork, plotnetwork!
 
@@ -17,6 +17,7 @@ include("voronoi.jl")
 include("extrude.jl")
 include("trees.jl")
 include("prune.jl")
+include("smooth.jl")
 include("generate.jl")
 
 """
