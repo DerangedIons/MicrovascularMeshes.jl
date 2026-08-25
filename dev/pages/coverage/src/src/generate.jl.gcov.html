@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2026-08-25 16:44:55</td>
+            <td class="headerValue">2026-08-25 16:51:54</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">-</td>
@@ -153,7 +153,7 @@
 <span id="L91"><span class="lineNum">      91</span> <span class="tlaGNC">          17 : function _build_network(::HalfSphere, rng::AbstractRNG, cfg::NetworkConfig{T}) where {T}</span></span>
 <span id="L92"><span class="lineNum">      92</span> <span class="tlaGNC">          17 :     R = cfg.sphere_radius</span></span>
 <span id="L93"><span class="lineNum">      93</span> <span class="tlaGNC">          17 :     points, a = hex_grid_disk_points(rng, cfg)</span></span>
-<span id="L94"><span class="lineNum">      94</span> <span class="tlaGNC">        6481 :     vertices2d, edges2d = voronoi_network(points, R; in_region = c -&gt; c[1]^2 + c[2]^2 &lt;= R^2)</span></span>
+<span id="L94"><span class="lineNum">      94</span> <span class="tlaGNC">        6454 :     vertices2d, edges2d = voronoi_network(points, R; in_region = c -&gt; c[1]^2 + c[2]^2 &lt;= R^2)</span></span>
 <span id="L95"><span class="lineNum">      95</span>              : </span>
 <span id="L96"><span class="lineNum">      96</span> <span class="tlaGNC">          17 :     net = VascularNetwork{T}()</span></span>
 <span id="L97"><span class="lineNum">      97</span> <span class="tlaGNC">          17 :     gid, nlayers = extrude_dome!(net, rng, vertices2d, edges2d, a, R, cfg)</span></span>
