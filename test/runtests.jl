@@ -1,4 +1,5 @@
 using IdealizedMicrovasculature
+using LinearAlgebra: dot, norm
 using Random
 using StaticArrays
 using Test
