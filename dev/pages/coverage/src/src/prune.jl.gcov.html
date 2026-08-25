@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2026-06-18 21:36:20</td>
+            <td class="headerValue">2026-08-25 16:44:55</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">-</td>
@@ -64,11 +64,11 @@
 <span id="L2"><span class="lineNum">       2</span>              : </span>
 <span id="L3"><span class="lineNum">       3</span>              : # Union-find root of `x` with path halving.</span>
 <span id="L4"><span class="lineNum">       4</span>              : function _find!(parent::Vector{Int}, x::Int)</span>
-<span id="L5"><span class="lineNum">       5</span> <span class="tlaGNC tlaBgGNC">      213230 :     while parent[x] != x</span></span>
-<span id="L6"><span class="lineNum">       6</span> <span class="tlaGNC">      187500 :         parent[x] = parent[parent[x]]</span></span>
-<span id="L7"><span class="lineNum">       7</span> <span class="tlaGNC">      187500 :         x = parent[x]</span></span>
-<span id="L8"><span class="lineNum">       8</span> <span class="tlaGNC">      187500 :     end</span></span>
-<span id="L9"><span class="lineNum">       9</span> <span class="tlaGNC">      213230 :     return x</span></span>
+<span id="L5"><span class="lineNum">       5</span> <span class="tlaGNC tlaBgGNC">      227622 :     while parent[x] != x</span></span>
+<span id="L6"><span class="lineNum">       6</span> <span class="tlaGNC">      200326 :         parent[x] = parent[parent[x]]</span></span>
+<span id="L7"><span class="lineNum">       7</span> <span class="tlaGNC">      200326 :         x = parent[x]</span></span>
+<span id="L8"><span class="lineNum">       8</span> <span class="tlaGNC">      200326 :     end</span></span>
+<span id="L9"><span class="lineNum">       9</span> <span class="tlaGNC">      227622 :     return x</span></span>
 <span id="L10"><span class="lineNum">      10</span>              : end</span>
 <span id="L11"><span class="lineNum">      11</span>              : </span>
 <span id="L12"><span class="lineNum">      12</span>              : &quot;&quot;&quot;</span>
@@ -81,24 +81,24 @@
 <span id="L19"><span class="lineNum">      19</span>              : </span>
 <span id="L20"><span class="lineNum">      20</span>              : A fully connected network is returned unchanged (the identical object).</span>
 <span id="L21"><span class="lineNum">      21</span>              : &quot;&quot;&quot;</span>
-<span id="L22"><span class="lineNum">      22</span> <span class="tlaGNC">          38 : function prune_disconnected(net::VascularNetwork{T}) where {T}</span></span>
-<span id="L23"><span class="lineNum">      23</span> <span class="tlaGNC">          38 :     n = nvertices(net)</span></span>
-<span id="L24"><span class="lineNum">      24</span> <span class="tlaGNC">          38 :     n == 0 &amp;&amp; return net</span></span>
+<span id="L22"><span class="lineNum">      22</span> <span class="tlaGNC">          40 : function prune_disconnected(net::VascularNetwork{T}) where {T}</span></span>
+<span id="L23"><span class="lineNum">      23</span> <span class="tlaGNC">          40 :     n = nvertices(net)</span></span>
+<span id="L24"><span class="lineNum">      24</span> <span class="tlaGNC">          40 :     n == 0 &amp;&amp; return net</span></span>
 <span id="L25"><span class="lineNum">      25</span>              : </span>
-<span id="L26"><span class="lineNum">      26</span> <span class="tlaGNC">       46100 :     parent = collect(1:n)</span></span>
-<span id="L27"><span class="lineNum">      27</span> <span class="tlaGNC">          38 :     for e in net.elements</span></span>
-<span id="L28"><span class="lineNum">      28</span> <span class="tlaGNC">       60515 :         a, b = _find!(parent, e[1]), _find!(parent, e[2])</span></span>
-<span id="L29"><span class="lineNum">      29</span> <span class="tlaGNC">       60515 :         a != b &amp;&amp; (parent[a] = b)</span></span>
-<span id="L30"><span class="lineNum">      30</span> <span class="tlaGNC">       60515 :     end</span></span>
+<span id="L26"><span class="lineNum">      26</span> <span class="tlaGNC">       49194 :     parent = collect(1:n)</span></span>
+<span id="L27"><span class="lineNum">      27</span> <span class="tlaGNC">          40 :     for e in net.elements</span></span>
+<span id="L28"><span class="lineNum">      28</span> <span class="tlaGNC">       64617 :         a, b = _find!(parent, e[1]), _find!(parent, e[2])</span></span>
+<span id="L29"><span class="lineNum">      29</span> <span class="tlaGNC">       64617 :         a != b &amp;&amp; (parent[a] = b)</span></span>
+<span id="L30"><span class="lineNum">      30</span> <span class="tlaGNC">       64617 :     end</span></span>
 <span id="L31"><span class="lineNum">      31</span>              : </span>
-<span id="L32"><span class="lineNum">      32</span> <span class="tlaGNC">       46100 :     sizes = zeros(Int, n)</span></span>
-<span id="L33"><span class="lineNum">      33</span> <span class="tlaGNC">          38 :     for v in 1:n</span></span>
-<span id="L34"><span class="lineNum">      34</span> <span class="tlaGNC">       46100 :         sizes[_find!(parent, v)] += 1</span></span>
-<span id="L35"><span class="lineNum">      35</span> <span class="tlaGNC">       92162 :     end</span></span>
-<span id="L36"><span class="lineNum">      36</span> <span class="tlaGNC">          76 :     keep_root = argmax(sizes)</span></span>
+<span id="L32"><span class="lineNum">      32</span> <span class="tlaGNC">       49194 :     sizes = zeros(Int, n)</span></span>
+<span id="L33"><span class="lineNum">      33</span> <span class="tlaGNC">          40 :     for v in 1:n</span></span>
+<span id="L34"><span class="lineNum">      34</span> <span class="tlaGNC">       49194 :         sizes[_find!(parent, v)] += 1</span></span>
+<span id="L35"><span class="lineNum">      35</span> <span class="tlaGNC">       98348 :     end</span></span>
+<span id="L36"><span class="lineNum">      36</span> <span class="tlaGNC">          80 :     keep_root = argmax(sizes)</span></span>
 <span id="L37"><span class="lineNum">      37</span>              : </span>
-<span id="L38"><span class="lineNum">      38</span> <span class="tlaGNC">          38 :     keep = [_find!(parent, v) == keep_root for v in 1:n]</span></span>
-<span id="L39"><span class="lineNum">      39</span> <span class="tlaGNC">          38 :     all(keep) &amp;&amp; return net</span></span>
+<span id="L38"><span class="lineNum">      38</span> <span class="tlaGNC">          40 :     keep = [_find!(parent, v) == keep_root for v in 1:n]</span></span>
+<span id="L39"><span class="lineNum">      39</span> <span class="tlaGNC">          40 :     all(keep) &amp;&amp; return net</span></span>
 <span id="L40"><span class="lineNum">      40</span>              : </span>
 <span id="L41"><span class="lineNum">      41</span> <span class="tlaGNC">       14255 :     newindex = zeros(Int, n)</span></span>
 <span id="L42"><span class="lineNum">      42</span> <span class="tlaGNC">          17 :     count = 0</span></span>

@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2026-06-18 21:36:20</td>
+            <td class="headerValue">2026-08-25 16:44:55</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">-</td>
@@ -93,34 +93,34 @@
 <span id="L31"><span class="lineNum">      31</span>              : net = generate_network(NetworkConfig(domain = HalfSphere(), sphere_radius = 120.0))</span>
 <span id="L32"><span class="lineNum">      32</span>              : ```</span>
 <span id="L33"><span class="lineNum">      33</span>              : &quot;&quot;&quot;</span>
-<span id="L34"><span class="lineNum">      34</span> <span class="tlaGNC tlaBgGNC">          35 : generate_network(rng::AbstractRNG, cfg::NetworkConfig=NetworkConfig()) =</span></span>
+<span id="L34"><span class="lineNum">      34</span> <span class="tlaGNC tlaBgGNC">          37 : generate_network(rng::AbstractRNG, cfg::NetworkConfig=NetworkConfig()) =</span></span>
 <span id="L35"><span class="lineNum">      35</span>              :     _build_network(cfg.domain, rng, cfg)</span>
 <span id="L36"><span class="lineNum">      36</span>              : </span>
 <span id="L37"><span class="lineNum">      37</span> <span class="tlaUNC tlaBgUNC">           0 : generate_network(cfg::NetworkConfig=NetworkConfig()) = generate_network(default_rng(), cfg)</span></span>
 <span id="L38"><span class="lineNum">      38</span>              : </span>
 <span id="L39"><span class="lineNum">      39</span>              : #--------------------------------------------------------------------------------# Cube</span>
 <span id="L40"><span class="lineNum">      40</span>              : </span>
-<span id="L41"><span class="lineNum">      41</span> <span class="tlaGNC tlaBgGNC">          17 : function _build_network(::Cube, rng::AbstractRNG, cfg::NetworkConfig{T}) where {T}</span></span>
-<span id="L42"><span class="lineNum">      42</span> <span class="tlaGNC">          17 :     points, a = hex_grid_points(rng, cfg)</span></span>
-<span id="L43"><span class="lineNum">      43</span> <span class="tlaGNC">          17 :     vertices2d, edges2d = voronoi_network(points, cfg.region_size)</span></span>
+<span id="L41"><span class="lineNum">      41</span> <span class="tlaGNC tlaBgGNC">          19 : function _build_network(::Cube, rng::AbstractRNG, cfg::NetworkConfig{T}) where {T}</span></span>
+<span id="L42"><span class="lineNum">      42</span> <span class="tlaGNC">          19 :     points, a = hex_grid_points(rng, cfg)</span></span>
+<span id="L43"><span class="lineNum">      43</span> <span class="tlaGNC">          19 :     vertices2d, edges2d = voronoi_network(points, cfg.region_size)</span></span>
 <span id="L44"><span class="lineNum">      44</span>              : </span>
-<span id="L45"><span class="lineNum">      45</span> <span class="tlaGNC">          17 :     net = VascularNetwork{T}()</span></span>
-<span id="L46"><span class="lineNum">      46</span> <span class="tlaGNC">          17 :     nvpl = extrude_capillary!(net, rng, vertices2d, edges2d, a, cfg)</span></span>
+<span id="L45"><span class="lineNum">      45</span> <span class="tlaGNC">          19 :     net = VascularNetwork{T}()</span></span>
+<span id="L46"><span class="lineNum">      46</span> <span class="tlaGNC">          19 :     nvpl = extrude_capillary!(net, rng, vertices2d, edges2d, a, cfg)</span></span>
 <span id="L47"><span class="lineNum">      47</span>              : </span>
-<span id="L48"><span class="lineNum">      48</span> <span class="tlaGNC">          17 :     top_offset = (cfg.num_layers - 1) * nvpl</span></span>
-<span id="L49"><span class="lineNum">      49</span> <span class="tlaGNC">          17 :     for i in 1:nvpl</span></span>
-<span id="L50"><span class="lineNum">      50</span> <span class="tlaGNC">        1488 :         set_bc!(net, i, NoFlow, 0)</span></span>
-<span id="L51"><span class="lineNum">      51</span> <span class="tlaGNC">        1488 :         set_bc!(net, top_offset + i, NoFlow, 0)</span></span>
-<span id="L52"><span class="lineNum">      52</span> <span class="tlaGNC">        2959 :     end</span></span>
+<span id="L48"><span class="lineNum">      48</span> <span class="tlaGNC">          19 :     top_offset = (cfg.num_layers - 1) * nvpl</span></span>
+<span id="L49"><span class="lineNum">      49</span> <span class="tlaGNC">          19 :     for i in 1:nvpl</span></span>
+<span id="L50"><span class="lineNum">      50</span> <span class="tlaGNC">        1640 :         set_bc!(net, i, NoFlow, 0)</span></span>
+<span id="L51"><span class="lineNum">      51</span> <span class="tlaGNC">        1640 :         set_bc!(net, top_offset + i, NoFlow, 0)</span></span>
+<span id="L52"><span class="lineNum">      52</span> <span class="tlaGNC">        3261 :     end</span></span>
 <span id="L53"><span class="lineNum">      53</span>              : </span>
-<span id="L54"><span class="lineNum">      54</span> <span class="tlaGNC">          17 :     connecting = Int[]</span></span>
-<span id="L55"><span class="lineNum">      55</span> <span class="tlaGNC">          17 :     add_venule!(net, rng, cfg, a, connecting)</span></span>
+<span id="L54"><span class="lineNum">      54</span> <span class="tlaGNC">          19 :     connecting = Int[]</span></span>
+<span id="L55"><span class="lineNum">      55</span> <span class="tlaGNC">          19 :     add_venule!(net, rng, cfg, a, connecting)</span></span>
 <span id="L56"><span class="lineNum">      56</span>              : </span>
-<span id="L57"><span class="lineNum">      57</span> <span class="tlaGNC">          17 :     dz = cfg.layer_spacing_fraction * cfg.region_size</span></span>
-<span id="L58"><span class="lineNum">      58</span> <span class="tlaGNC">          17 :     span = cfg.num_layers * dz - T(5)</span></span>
-<span id="L59"><span class="lineNum">      59</span> <span class="tlaGNC">          17 :     sf = cfg.scale_factor_arteriole</span></span>
+<span id="L57"><span class="lineNum">      57</span> <span class="tlaGNC">          19 :     dz = cfg.layer_spacing_fraction * cfg.region_size</span></span>
+<span id="L58"><span class="lineNum">      58</span> <span class="tlaGNC">          19 :     span = cfg.num_layers * dz - T(5)</span></span>
+<span id="L59"><span class="lineNum">      59</span> <span class="tlaGNC">          19 :     sf = cfg.scale_factor_arteriole</span></span>
 <span id="L60"><span class="lineNum">      60</span>              : </span>
-<span id="L61"><span class="lineNum">      61</span> <span class="tlaGNC">          17 :     add_arteriole!(net, rng, cfg, connecting;</span></span>
+<span id="L61"><span class="lineNum">      61</span> <span class="tlaGNC">          19 :     add_arteriole!(net, rng, cfg, connecting;</span></span>
 <span id="L62"><span class="lineNum">      62</span>              :         start=2 .* SVector{3,T}(70, 115, 0.5 * 0.2 * span),</span>
 <span id="L63"><span class="lineNum">      63</span>              :         finish=2 .* SVector{3,T}(70, 105, 0.5 * 0.3 * span),</span>
 <span id="L64"><span class="lineNum">      64</span>              :         trunk_radius=T(13) * sf,</span>
@@ -132,7 +132,7 @@
 <span id="L70"><span class="lineNum">      70</span>              :         o22=2 .* SVector{3,T}(-25, -2, -30),</span>
 <span id="L71"><span class="lineNum">      71</span>              :         exclude_count=8)</span>
 <span id="L72"><span class="lineNum">      72</span>              : </span>
-<span id="L73"><span class="lineNum">      73</span> <span class="tlaGNC">          17 :     add_arteriole!(net, rng, cfg, connecting;</span></span>
+<span id="L73"><span class="lineNum">      73</span> <span class="tlaGNC">          19 :     add_arteriole!(net, rng, cfg, connecting;</span></span>
 <span id="L74"><span class="lineNum">      74</span>              :         start=2 .* SVector{3,T}(-15, 70, 0.5 * 0.8 * span),</span>
 <span id="L75"><span class="lineNum">      75</span>              :         finish=2 .* SVector{3,T}(-5, 70, 0.5 * 0.7 * span),</span>
 <span id="L76"><span class="lineNum">      76</span>              :         trunk_radius=T(12) * sf,</span>
@@ -144,8 +144,8 @@
 <span id="L82"><span class="lineNum">      82</span>              :         o22=2 .* SVector{3,T}(-2, 20, -10),</span>
 <span id="L83"><span class="lineNum">      83</span>              :         exclude_count=16)</span>
 <span id="L84"><span class="lineNum">      84</span>              : </span>
-<span id="L85"><span class="lineNum">      85</span> <span class="tlaGNC">          17 :     enforce_min_radius!(net, connecting, cfg)</span></span>
-<span id="L86"><span class="lineNum">      86</span> <span class="tlaGNC">          17 :     return prune_disconnected(net)</span></span>
+<span id="L85"><span class="lineNum">      85</span> <span class="tlaGNC">          19 :     enforce_min_radius!(net, connecting, cfg)</span></span>
+<span id="L86"><span class="lineNum">      86</span> <span class="tlaGNC">          19 :     return prune_disconnected(net)</span></span>
 <span id="L87"><span class="lineNum">      87</span>              : end</span>
 <span id="L88"><span class="lineNum">      88</span>              : </span>
 <span id="L89"><span class="lineNum">      89</span>              : #--------------------------------------------------------------------------------# HalfSphere</span>
@@ -153,7 +153,7 @@
 <span id="L91"><span class="lineNum">      91</span> <span class="tlaGNC">          17 : function _build_network(::HalfSphere, rng::AbstractRNG, cfg::NetworkConfig{T}) where {T}</span></span>
 <span id="L92"><span class="lineNum">      92</span> <span class="tlaGNC">          17 :     R = cfg.sphere_radius</span></span>
 <span id="L93"><span class="lineNum">      93</span> <span class="tlaGNC">          17 :     points, a = hex_grid_disk_points(rng, cfg)</span></span>
-<span id="L94"><span class="lineNum">      94</span> <span class="tlaGNC">        6474 :     vertices2d, edges2d = voronoi_network(points, R; in_region = c -&gt; c[1]^2 + c[2]^2 &lt;= R^2)</span></span>
+<span id="L94"><span class="lineNum">      94</span> <span class="tlaGNC">        6481 :     vertices2d, edges2d = voronoi_network(points, R; in_region = c -&gt; c[1]^2 + c[2]^2 &lt;= R^2)</span></span>
 <span id="L95"><span class="lineNum">      95</span>              : </span>
 <span id="L96"><span class="lineNum">      96</span> <span class="tlaGNC">          17 :     net = VascularNetwork{T}()</span></span>
 <span id="L97"><span class="lineNum">      97</span> <span class="tlaGNC">          17 :     gid, nlayers = extrude_dome!(net, rng, vertices2d, edges2d, a, R, cfg)</span></span>
