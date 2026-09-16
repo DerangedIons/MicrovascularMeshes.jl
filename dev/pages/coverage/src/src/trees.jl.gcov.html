@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2026-09-02 19:56:47</td>
+            <td class="headerValue">2026-09-16 20:03:54</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">-</td>
@@ -77,8 +77,8 @@
 <span id="L15"><span class="lineNum">      15</span> <span class="tlaGNC">         418 :     @inbounds for i in 1:search_upto</span></span>
 <span id="L16"><span class="lineNum">      16</span> <span class="tlaGNC">      568788 :         d = norm(net.vertices[i] - point)</span></span>
 <span id="L17"><span class="lineNum">      17</span> <span class="tlaGNC">      568788 :         if d &lt; best_distance</span></span>
-<span id="L18"><span class="lineNum">      18</span> <span class="tlaGNC">       13802 :             best_distance = d</span></span>
-<span id="L19"><span class="lineNum">      19</span> <span class="tlaGNC">       13802 :             best_index = i</span></span>
+<span id="L18"><span class="lineNum">      18</span> <span class="tlaGNC">       13642 :             best_distance = d</span></span>
+<span id="L19"><span class="lineNum">      19</span> <span class="tlaGNC">       13642 :             best_index = i</span></span>
 <span id="L20"><span class="lineNum">      20</span>              :         end</span>
 <span id="L21"><span class="lineNum">      21</span> <span class="tlaGNC">     1137158 :     end</span></span>
 <span id="L22"><span class="lineNum">      22</span> <span class="tlaGNC">         418 :     return best_index</span></span>
@@ -114,7 +114,7 @@
 <span id="L52"><span class="lineNum">      52</span> <span class="tlaGNC">          38 :     σ = T(0.1) * a</span></span>
 <span id="L53"><span class="lineNum">      53</span> <span class="tlaGNC">          38 :     for i in 0:nverts-1</span></span>
 <span id="L54"><span class="lineNum">      54</span> <span class="tlaGNC">         418 :         p = start + (finish - start) * T(i / nverts)</span></span>
-<span id="L55"><span class="lineNum">      55</span> <span class="tlaGNC">         420 :         p += σ .* SVector{3,T}(_randn(rng, T), _randn(rng, T), _randn(rng, T))</span></span>
+<span id="L55"><span class="lineNum">      55</span> <span class="tlaGNC">         431 :         p += σ .* SVector{3,T}(_randn(rng, T), _randn(rng, T), _randn(rng, T))</span></span>
 <span id="L56"><span class="lineNum">      56</span> <span class="tlaGNC">         418 :         add_vertex!(net, p)</span></span>
 <span id="L57"><span class="lineNum">      57</span> <span class="tlaGNC">         798 :     end</span></span>
 <span id="L58"><span class="lineNum">      58</span>              : </span>
@@ -124,7 +124,7 @@
 <span id="L62"><span class="lineNum">      62</span> <span class="tlaGNC">          38 :     sf = cfg.scale_factor_venule</span></span>
 <span id="L63"><span class="lineNum">      63</span> <span class="tlaGNC">          38 :     venule_radius = T(20) * sf</span></span>
 <span id="L64"><span class="lineNum">      64</span> <span class="tlaGNC">          38 :     for i in 0:nverts-2</span></span>
-<span id="L65"><span class="lineNum">      65</span> <span class="tlaGNC">         393 :         add_element!(net, base + i, base + i + 1, venule_radius + T(0.1) * _randn(rng, T))</span></span>
+<span id="L65"><span class="lineNum">      65</span> <span class="tlaGNC">         384 :         add_element!(net, base + i, base + i + 1, venule_radius + T(0.1) * _randn(rng, T))</span></span>
 <span id="L66"><span class="lineNum">      66</span> <span class="tlaGNC">         380 :         iseven(i) &amp;&amp; (venule_radius -= T(1.5) * sf)</span></span>
 <span id="L67"><span class="lineNum">      67</span> <span class="tlaGNC">         722 :     end</span></span>
 <span id="L68"><span class="lineNum">      68</span>              : </span>
@@ -132,7 +132,7 @@
 <span id="L70"><span class="lineNum">      70</span> <span class="tlaGNC">         190 :         vertex = base + i</span></span>
 <span id="L71"><span class="lineNum">      71</span> <span class="tlaGNC">         190 :         closest = nearest_vertex(net, net.vertices[vertex], capillary_count)</span></span>
 <span id="L72"><span class="lineNum">      72</span> <span class="tlaGNC">         190 :         push!(connecting, closest)</span></span>
-<span id="L73"><span class="lineNum">      73</span> <span class="tlaGNC">         203 :         add_element!(net, vertex, closest, T(7) * sf + T(0.5) * _randn(rng, T))</span></span>
+<span id="L73"><span class="lineNum">      73</span> <span class="tlaGNC">         190 :         add_element!(net, vertex, closest, T(7) * sf + T(0.5) * _randn(rng, T))</span></span>
 <span id="L74"><span class="lineNum">      74</span> <span class="tlaGNC">         342 :     end</span></span>
 <span id="L75"><span class="lineNum">      75</span> <span class="tlaGNC">          38 :     return nothing</span></span>
 <span id="L76"><span class="lineNum">      76</span>              : end</span>
@@ -224,10 +224,10 @@
 <span id="L162"><span class="lineNum">     162</span> <span class="tlaGNC">          38 :     rmin = T(5) * cfg.scale_factor_arteriole</span></span>
 <span id="L163"><span class="lineNum">     163</span> <span class="tlaGNC">          38 :     for vertex in connecting</span></span>
 <span id="L164"><span class="lineNum">     164</span> <span class="tlaGNC">         402 :         for (e, element) in enumerate(net.elements)</span></span>
-<span id="L165"><span class="lineNum">     165</span> <span class="tlaGNC">      758623 :             if (element[1] == vertex || element[2] == vertex) &amp;&amp; net.radii[e] &lt; rmin</span></span>
-<span id="L166"><span class="lineNum">     166</span> <span class="tlaGNC">         804 :                 net.radii[e] = rmin</span></span>
+<span id="L165"><span class="lineNum">     165</span> <span class="tlaGNC">      758362 :             if (element[1] == vertex || element[2] == vertex) &amp;&amp; net.radii[e] &lt; rmin</span></span>
+<span id="L166"><span class="lineNum">     166</span> <span class="tlaGNC">         838 :                 net.radii[e] = rmin</span></span>
 <span id="L167"><span class="lineNum">     167</span>              :             end</span>
-<span id="L168"><span class="lineNum">     168</span> <span class="tlaGNC">     1516844 :         end</span></span>
+<span id="L168"><span class="lineNum">     168</span> <span class="tlaGNC">     1516322 :         end</span></span>
 <span id="L169"><span class="lineNum">     169</span> <span class="tlaGNC">         402 :     end</span></span>
 <span id="L170"><span class="lineNum">     170</span> <span class="tlaGNC">          38 :     return nothing</span></span>
 <span id="L171"><span class="lineNum">     171</span>              : end</span>

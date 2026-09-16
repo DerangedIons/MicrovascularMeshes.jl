@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2026-09-02 19:56:47</td>
+            <td class="headerValue">2026-09-16 20:03:54</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">-</td>
@@ -64,11 +64,11 @@
 <span id="L2"><span class="lineNum">       2</span>              : </span>
 <span id="L3"><span class="lineNum">       3</span>              : # Union-find root of `x` with path halving.</span>
 <span id="L4"><span class="lineNum">       4</span>              : function _find!(parent::Vector{Int}, x::Int)</span>
-<span id="L5"><span class="lineNum">       5</span> <span class="tlaGNC tlaBgGNC">      227622 :     while parent[x] != x</span></span>
-<span id="L6"><span class="lineNum">       6</span> <span class="tlaGNC">      200326 :         parent[x] = parent[parent[x]]</span></span>
-<span id="L7"><span class="lineNum">       7</span> <span class="tlaGNC">      200326 :         x = parent[x]</span></span>
-<span id="L8"><span class="lineNum">       8</span> <span class="tlaGNC">      200326 :     end</span></span>
-<span id="L9"><span class="lineNum">       9</span> <span class="tlaGNC">      227622 :     return x</span></span>
+<span id="L5"><span class="lineNum">       5</span> <span class="tlaGNC tlaBgGNC">      227564 :     while parent[x] != x</span></span>
+<span id="L6"><span class="lineNum">       6</span> <span class="tlaGNC">      203587 :         parent[x] = parent[parent[x]]</span></span>
+<span id="L7"><span class="lineNum">       7</span> <span class="tlaGNC">      203587 :         x = parent[x]</span></span>
+<span id="L8"><span class="lineNum">       8</span> <span class="tlaGNC">      203587 :     end</span></span>
+<span id="L9"><span class="lineNum">       9</span> <span class="tlaGNC">      227564 :     return x</span></span>
 <span id="L10"><span class="lineNum">      10</span>              : end</span>
 <span id="L11"><span class="lineNum">      11</span>              : </span>
 <span id="L12"><span class="lineNum">      12</span>              : &quot;&quot;&quot;</span>
@@ -87,9 +87,9 @@
 <span id="L25"><span class="lineNum">      25</span>              : </span>
 <span id="L26"><span class="lineNum">      26</span> <span class="tlaGNC">       49194 :     parent = collect(1:n)</span></span>
 <span id="L27"><span class="lineNum">      27</span> <span class="tlaGNC">          40 :     for e in net.elements</span></span>
-<span id="L28"><span class="lineNum">      28</span> <span class="tlaGNC">       64617 :         a, b = _find!(parent, e[1]), _find!(parent, e[2])</span></span>
-<span id="L29"><span class="lineNum">      29</span> <span class="tlaGNC">       64617 :         a != b &amp;&amp; (parent[a] = b)</span></span>
-<span id="L30"><span class="lineNum">      30</span> <span class="tlaGNC">       64617 :     end</span></span>
+<span id="L28"><span class="lineNum">      28</span> <span class="tlaGNC">       64588 :         a, b = _find!(parent, e[1]), _find!(parent, e[2])</span></span>
+<span id="L29"><span class="lineNum">      29</span> <span class="tlaGNC">       64588 :         a != b &amp;&amp; (parent[a] = b)</span></span>
+<span id="L30"><span class="lineNum">      30</span> <span class="tlaGNC">       64588 :     end</span></span>
 <span id="L31"><span class="lineNum">      31</span>              : </span>
 <span id="L32"><span class="lineNum">      32</span> <span class="tlaGNC">       49194 :     sizes = zeros(Int, n)</span></span>
 <span id="L33"><span class="lineNum">      33</span> <span class="tlaGNC">          40 :     for v in 1:n</span></span>
@@ -109,10 +109,10 @@
 <span id="L47"><span class="lineNum">      47</span> <span class="tlaGNC">          17 :     elements = SVector{2,Int}[]</span></span>
 <span id="L48"><span class="lineNum">      48</span> <span class="tlaGNC">          17 :     radii = T[]</span></span>
 <span id="L49"><span class="lineNum">      49</span> <span class="tlaGNC">          17 :     for (k, e) in enumerate(net.elements)</span></span>
-<span id="L50"><span class="lineNum">      50</span> <span class="tlaGNC">       18250 :         keep[e[1]] || continue            # both endpoints share a component</span></span>
-<span id="L51"><span class="lineNum">      51</span> <span class="tlaGNC">       18150 :         push!(elements, SVector{2,Int}(newindex[e[1]], newindex[e[2]]))</span></span>
-<span id="L52"><span class="lineNum">      52</span> <span class="tlaGNC">       18150 :         push!(radii, net.radii[k])</span></span>
-<span id="L53"><span class="lineNum">      53</span> <span class="tlaGNC">       36483 :     end</span></span>
+<span id="L50"><span class="lineNum">      50</span> <span class="tlaGNC">       18223 :         keep[e[1]] || continue            # both endpoints share a component</span></span>
+<span id="L51"><span class="lineNum">      51</span> <span class="tlaGNC">       18068 :         push!(elements, SVector{2,Int}(newindex[e[1]], newindex[e[2]]))</span></span>
+<span id="L52"><span class="lineNum">      52</span> <span class="tlaGNC">       18068 :         push!(radii, net.radii[k])</span></span>
+<span id="L53"><span class="lineNum">      53</span> <span class="tlaGNC">       36429 :     end</span></span>
 <span id="L54"><span class="lineNum">      54</span> <span class="tlaGNC">          17 :     return VascularNetwork{T}(net.vertices[keep], elements, radii,</span></span>
 <span id="L55"><span class="lineNum">      55</span>              :                               net.node_tags[keep], net.bcvalues[keep])</span>
 <span id="L56"><span class="lineNum">      56</span>              : end</span>

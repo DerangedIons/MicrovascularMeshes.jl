@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2026-09-02 19:56:47</td>
+            <td class="headerValue">2026-09-16 20:03:54</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">-</td>
@@ -120,7 +120,7 @@
 <span id="L58"><span class="lineNum">      58</span>              : </span>
 <span id="L59"><span class="lineNum">      59</span> <span class="tlaGNC">          21 :     μ = log(cfg.radius_default_small_vessels)</span></span>
 <span id="L60"><span class="lineNum">      60</span> <span class="tlaGNC">          21 :     σ = cfg.radius_stddev_small_vessels</span></span>
-<span id="L61"><span class="lineNum">      61</span> <span class="tlaGNC">       44381 :     sample_radius() = exp(μ + σ * _randn(rng, T))</span></span>
+<span id="L61"><span class="lineNum">      61</span> <span class="tlaGNC">       44361 :     sample_radius() = exp(μ + σ * _randn(rng, T))</span></span>
 <span id="L62"><span class="lineNum">      62</span>              : </span>
 <span id="L63"><span class="lineNum">      63</span>              :     # Vertical elements connect a vertex to its copy in the next layer.</span>
 <span id="L64"><span class="lineNum">      64</span> <span class="tlaGNC">          21 :     for layer in 1:nlayers-1, i in 1:nvpl</span></span>
@@ -131,7 +131,7 @@
 <span id="L69"><span class="lineNum">      69</span> <span class="tlaGNC">          21 :     for layer in 0:nlayers-2</span></span>
 <span id="L70"><span class="lineNum">      70</span> <span class="tlaGNC">         365 :         for idx in drop_horizontal_edges(rng, length(edges2d), cfg.drop_fraction_hex_grid)</span></span>
 <span id="L71"><span class="lineNum">      71</span> <span class="tlaGNC">       12438 :             e = edges2d[idx]</span></span>
-<span id="L72"><span class="lineNum">      72</span> <span class="tlaGNC">       12657 :             add_element!(net, e[1] + layer * nvpl, e[2] + (layer + 1) * nvpl, sample_radius())</span></span>
+<span id="L72"><span class="lineNum">      72</span> <span class="tlaGNC">       12637 :             add_element!(net, e[1] + layer * nvpl, e[2] + (layer + 1) * nvpl, sample_radius())</span></span>
 <span id="L73"><span class="lineNum">      73</span> <span class="tlaGNC">       12438 :         end</span></span>
 <span id="L74"><span class="lineNum">      74</span> <span class="tlaGNC">         709 :     end</span></span>
 <span id="L75"><span class="lineNum">      75</span> <span class="tlaGNC">          21 :     return nvpl</span></span>
@@ -190,7 +190,7 @@
 <span id="L128"><span class="lineNum">     128</span>              : </span>
 <span id="L129"><span class="lineNum">     129</span> <span class="tlaGNC">          19 :     μ = log(cfg.radius_default_small_vessels)</span></span>
 <span id="L130"><span class="lineNum">     130</span> <span class="tlaGNC">          19 :     σ = cfg.radius_stddev_small_vessels</span></span>
-<span id="L131"><span class="lineNum">     131</span> <span class="tlaGNC">       22360 :     sample_radius() = exp(μ + σ * _randn(rng, T))</span></span>
+<span id="L131"><span class="lineNum">     131</span> <span class="tlaGNC">       22274 :     sample_radius() = exp(μ + σ * _randn(rng, T))</span></span>
 <span id="L132"><span class="lineNum">     132</span>              : </span>
 <span id="L133"><span class="lineNum">     133</span>              :     # Vertical elements connect a vertex to its copy in the next layer, when present in both.</span>
 <span id="L134"><span class="lineNum">     134</span> <span class="tlaGNC">          19 :     for ℓ in 1:nlayers-1, i in 1:np</span></span>
@@ -205,7 +205,7 @@
 <span id="L143"><span class="lineNum">     143</span> <span class="tlaGNC">        9562 :             e = edges2d[idx]</span></span>
 <span id="L144"><span class="lineNum">     144</span> <span class="tlaGNC">        9562 :             g1, g2 = gid[e[1], ℓ], gid[e[2], ℓ+1]</span></span>
 <span id="L145"><span class="lineNum">     145</span> <span class="tlaGNC">        9562 :             (g1 != 0 &amp;&amp; g2 != 0) || continue</span></span>
-<span id="L146"><span class="lineNum">     146</span> <span class="tlaGNC">        6566 :             add_element!(net, g1, g2, sample_radius())</span></span>
+<span id="L146"><span class="lineNum">     146</span> <span class="tlaGNC">        6480 :             add_element!(net, g1, g2, sample_radius())</span></span>
 <span id="L147"><span class="lineNum">     147</span> <span class="tlaGNC">        9562 :         end</span></span>
 <span id="L148"><span class="lineNum">     148</span> <span class="tlaGNC">         513 :     end</span></span>
 <span id="L149"><span class="lineNum">     149</span> <span class="tlaGNC">          19 :     return gid, nlayers</span></span>
