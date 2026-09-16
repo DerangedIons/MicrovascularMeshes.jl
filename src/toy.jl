@@ -1,6 +1,6 @@
 #--------------------------------------------------------------------------------# Toy network
 
-const _TOY_LAYOUTS = (:flat, :volumetric, :stacked, :radial)
+const _TOY_LAYOUTS = (:volumetric, :flat, :radial)
 
 # Split axis of every generation, one vector per fan the layout hangs off a hub. `:radial`
 # spaces its planes by π/copies, not 2π/copies: a fan is symmetric under y ↦ -y, so a
@@ -35,14 +35,13 @@ function _add_fan!(
     hub::Int,
     levels::Vector{Vector{SVector{3,T}}},
     xs::Vector{T},
-    shift::SVector{3,T},
     radii::Vector{T},
 ) where {T}
     parents = [hub]
     for g in 1:length(levels)-1
         children = Vector{Int}(undef, length(levels[g+1]))
         for (j, offset) in enumerate(levels[g+1])
-            children[j] = add_vertex!(net, SVector{3,T}(xs[g+1], 0, 0) + offset + shift)
+            children[j] = add_vertex!(net, SVector{3,T}(xs[g+1], 0, 0) + offset)
             add_element!(net, parents[(j+1)>>1], children[j], radii[g+1])
         end
         parents = children
@@ -57,14 +56,13 @@ function _add_tree!(
     fans::Vector{Vector{Vector{SVector{3,T}}}},
     xroot::T,
     xs::Vector{T},
-    shift::SVector{3,T},
     radii::Vector{T},
     trunk_radius::T,
 ) where {T}
-    root = add_vertex!(net, SVector{3,T}(xroot, 0, 0) + shift)
-    hub = add_vertex!(net, SVector{3,T}(xs[1], 0, 0) + shift)
+    root = add_vertex!(net, SVector{3,T}(xroot, 0, 0))
+    hub = add_vertex!(net, SVector{3,T}(xs[1], 0, 0))
     add_element!(net, root, hub, trunk_radius)
-    leaves = map(levels -> _add_fan!(net, hub, levels, xs, shift, radii), fans)
+    leaves = map(levels -> _add_fan!(net, hub, levels, xs, radii), fans)
     return (root, leaves)
 end
 
@@ -77,33 +75,8 @@ function _add_ladder!(net::VascularNetwork, arterial::Vector{Int}, venous::Vecto
     return nothing
 end
 
-# Append one inlet-to-outlet unit displaced by `shift` and return the arterial and venous
-# leaf indices of each fan.
-function _add_toy_unit!(
-    net::VascularNetwork{T},
-    fans::Vector{Vector{Vector{SVector{3,T}}}},
-    shift::SVector{3,T},
-    extent::T,
-    capillary_radius::T,
-) where {T}
-    G = length(first(fans)) - 1
-    # Murray's law upward from the capillaries: r³ doubles at each generation toward the hub
-    radii = map(g -> capillary_radius * T(2)^(T(G + 1 - g) / 3), 0:G)
-    trunk_radius = first(radii) * cbrt(T(length(fans)))
-    # trunk 0.15, fan 0.25, capillary bed 0.2 of the extent; the venous side mirrors it
-    xs = map(g -> extent * (T(0.15) + T(0.25) * g / G), 0:G)
-
-    (inlet, arterial) = _add_tree!(net, fans, zero(T), xs, shift, radii, trunk_radius)
-    (outlet, venous) = _add_tree!(net, fans, extent, map(x -> extent - x, xs), shift, radii,
-        trunk_radius)
-    set_bc!(net, inlet, Inlet, 1e-3)
-    set_bc!(net, outlet, Outlet, 2000)
-    foreach((a, v) -> _add_ladder!(net, a, v, capillary_radius), arterial, venous)
-    return (arterial, venous)
-end
-
 """
-    toy_network(T=Float64; layout=:flat, kwargs...) -> VascularNetwork{T}
+    toy_network(T=Float64; layout=:volumetric, kwargs...) -> VascularNetwork{T}
 
 Build a small, deterministic [`VascularNetwork`](@ref) shaped like the textbook
 microcirculation diagram: a single [`Inlet`](@ref) on the left feeds a bifurcating arterial
@@ -132,52 +105,47 @@ vertex is `Interior` with a zero boundary value.
 ### Layouts
 With `n = 2^generations` leaves per tree:
 
-- `:flat` — every node in the `z = 0` plane, leaves evenly spaced in `y` at pitch
-  `width/n`. `4n` vertices and `6n - 3` elements, of which `2n - 1` are capillaries.
-- `:volumetric` — generations alternate between splitting in `y` and in `z`, so the leaves
-  form a `2^⌈generations/2⌉ × 2^⌊generations/2⌋` grid in the `y`–`z` plane. The leaf
-  order is a Z-order curve, so a few ladder rungs jump across the grid. Counts match
-  `:flat`.
-- `:stacked` — `layers` copies of `:flat` spaced `width/n` apart in `z`, each with its own
-  inlet and outlet, with corresponding leaves of adjacent layers joined by capillaries.
-  `layers * 4n` vertices and `layers * (6n - 3) + (layers - 1) * 2n` elements.
+- `:volumetric` (default) — generations alternate between splitting in `y` and in `z`, so
+  the leaves form a `2^⌈generations/2⌉ × 2^⌊generations/2⌋` grid in the `y`–`z` plane.
+  The leaf order is a Z-order curve, so a few ladder rungs jump across the grid. `4n`
+  vertices and `6n - 3` elements, of which `2n - 1` are capillaries.
+- `:flat` — the textbook picture: every node in the `z = 0` plane, leaves evenly spaced in
+  `y` at pitch `width/n`. Counts match `:volumetric`.
 - `:radial` — `copies` of `:flat` rotated about the `x` axis onto planes `π/copies` apart,
   sharing one inlet, one outlet, and both trunks, whose radius grows by `cbrt(copies)` to
   keep Murray's law at the hubs. `2 * (2 + copies * (2n - 2))` vertices and
   `2 * (1 + copies * (2n - 2)) + copies * (2n - 1)` elements.
 
 ### Keyword Arguments
-- `layout`: one of `:flat`, `:volumetric`, `:stacked`, or `:radial` (default `:flat`).
+- `layout`: one of `:volumetric`, `:flat`, or `:radial` (default `:volumetric`).
 - `generations`: bifurcations per tree, `≥ 1`; each tree has `2^generations` leaves
   (default `3`).
 - `extent`: inlet-to-outlet distance along `x` (default `200`).
 - `width`: transverse spread of the leaves (default `100`).
 - `capillary_radius`: radius of every capillary, matching
   `NetworkConfig().radius_default_small_vessels` by default (`2.6`).
-- `layers`: number of stacked copies, `≥ 1`; `:stacked` only (default `3`).
 - `copies`: number of rotated copies, `≥ 1`; `:radial` only (default `4`).
 
 ### Examples
 ```julia
 using Random
 net = toy_network()                                   # 32 vertices, 45 elements
+net = toy_network(; layout=:flat, generations=2)
 net = toy_network(Float32; layout=:radial, copies=3)
 curved = smooth_network(MersenneTwister(0), toy_network(; generations=4))
 ```
 """
 function toy_network(::Type{T}=Float64;
-    layout=:flat,
+    layout=:volumetric,
     generations::Integer=3,
     extent::Real=200,
     width::Real=100,
     capillary_radius::Real=2.6,
-    layers::Integer=3,
     copies::Integer=4,
 ) where {T<:Real}
     layout ∈ _TOY_LAYOUTS ||
         throw(ArgumentError("layout must be one of $(_TOY_LAYOUTS), got $(repr(layout))"))
     generations ≥ 1 || throw(ArgumentError("generations must be ≥ 1, got $generations"))
-    layers ≥ 1 || throw(ArgumentError("layers must be ≥ 1, got $layers"))
     copies ≥ 1 || throw(ArgumentError("copies must be ≥ 1, got $copies"))
     extent > 0 || throw(ArgumentError("extent must be positive, got $extent"))
     width > 0 || throw(ArgumentError("width must be positive, got $width"))
@@ -185,21 +153,19 @@ function toy_network(::Type{T}=Float64;
         throw(ArgumentError("capillary_radius must be positive, got $capillary_radius"))
 
     (E, W, rc) = (T(extent), T(width), T(capillary_radius))
-    fans = map(axes -> _fan_levels(axes, W), _fan_axes(layout, T, generations, copies))
-    net = VascularNetwork{T}()
-    if layout ≢ :stacked
-        _add_toy_unit!(net, fans, zero(SVector{3,T}), E, rc)
-        return net
-    end
+    G = generations
+    fans = map(axes -> _fan_levels(axes, W), _fan_axes(layout, T, G, copies))
+    # Murray's law upward from the capillaries: r³ doubles at each generation toward the hub
+    radii = map(g -> rc * T(2)^(T(G + 1 - g) / 3), 0:G)
+    trunk_radius = first(radii) * cbrt(T(length(fans)))
+    # trunk 0.15, fan 0.25, capillary bed 0.2 of the extent; the venous side mirrors it
+    xs = map(g -> E * (T(0.15) + T(0.25) * g / G), 0:G)
 
-    pitch = W / 2^generations
-    units = map(ℓ -> _add_toy_unit!(net, fans, SVector{3,T}(0, 0, (ℓ - 1) * pitch), E, rc),
-        1:layers)
-    # vertical capillaries join corresponding leaves of adjacent layers, as in extrusion
-    for ℓ in 1:layers-1
-        ((arterial, venous), (arterial′, venous′)) = (units[ℓ], units[ℓ+1])
-        foreach((i, j) -> add_element!(net, i, j, rc), only(arterial), only(arterial′))
-        foreach((i, j) -> add_element!(net, i, j, rc), only(venous), only(venous′))
-    end
+    net = VascularNetwork{T}()
+    (inlet, arterial) = _add_tree!(net, fans, zero(T), xs, radii, trunk_radius)
+    (outlet, venous) = _add_tree!(net, fans, E, map(x -> E - x, xs), radii, trunk_radius)
+    set_bc!(net, inlet, Inlet, 1e-3)
+    set_bc!(net, outlet, Outlet, 2000)
+    foreach((a, v) -> _add_ladder!(net, a, v, rc), arterial, venous)
     return net
 end

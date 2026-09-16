@@ -1,7 +1,7 @@
 ---
 slug: toy-network-fixture
 created: 2026-09-16-1448
-status: done  # implemented as toy_network in commit b776ad0 (radial fans spaced π/copies, not 2π/copies)
+status: done  # implemented as toy_network in commit b776ad0 (radial fans spaced π/copies, not 2π/copies); :stacked later dropped and :volumetric made the default
 ---
 
 # Handoff: `toy_network` — hand-built arteriole → capillary bed → venule fixture

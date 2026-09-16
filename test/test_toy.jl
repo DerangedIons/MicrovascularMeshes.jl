@@ -1,18 +1,13 @@
-const TOY_LAYOUTS = (:flat, :volumetric, :stacked, :radial)
+const TOY_LAYOUTS = (:volumetric, :flat, :radial)
 
-# Closed-form sizes from the toy_network docstring, with n = 2^G leaves per tree.
-# `units` is the number of Inlet/Outlet pairs, `ncap` the number of capillary elements.
-function _toy_expected(layout, G; layers=3, copies=4)
+# Closed-form sizes from the toy_network docstring, with n = 2^G leaves per tree;
+# `ncap` is the number of capillary elements.
+function _toy_expected(layout, G; copies=4)
     n = 2^G
-    if layout ∈ (:flat, :volumetric)
-        return (; nv=4n, ne=6n - 3, ncap=2n - 1, units=1)
-    elseif layout ≡ :stacked
-        return (; nv=layers * 4n, ne=layers * (6n - 3) + (layers - 1) * 2n,
-            ncap=layers * (2n - 1) + (layers - 1) * 2n, units=layers)
-    end
+    layout ≡ :radial || return (; nv=4n, ne=6n - 3, ncap=2n - 1)
     side_v = 2 + copies * (2n - 2)
     side_e = 1 + copies * (2n - 2)
-    return (; nv=2side_v, ne=2side_e + copies * (2n - 1), ncap=copies * (2n - 1), units=1)
+    return (; nv=2side_v, ne=2side_e + copies * (2n - 1), ncap=copies * (2n - 1))
 end
 
 # Element indices incident to each vertex.
@@ -46,13 +41,9 @@ _asymmetric_vertices(net, f; atol) =
 # Rotation by θ about the x axis.
 _rotate_x(θ) = p -> typeof(p)(p[1], p[2] * cos(θ) - p[3] * sin(θ), p[2] * sin(θ) + p[3] * cos(θ))
 
-# The half-turn about the bed center that maps each toy layout onto itself: arterial leaf k
-# ↦ venous leaf n+1-k, which carries the chiral ladder onto itself. `:stacked` keeps z so
-# that each layer maps onto itself.
-function _half_turn(layout, extent)
-    layout ≡ :stacked && return p -> typeof(p)(extent - p[1], -p[2], p[3])
-    return p -> typeof(p)(extent - p[1], -p[2], -p[3])
-end
+# The half-turn about the bed center that maps every toy layout onto itself: arterial leaf
+# k ↦ venous leaf n+1-k, which carries the chiral ladder onto itself.
+_half_turn(extent) = p -> typeof(p)(extent - p[1], -p[2], -p[3])
 
 #--------------------------------------------------------------------------------# Structure
 
@@ -89,16 +80,15 @@ end
 @testset "toy_network tags and boundary values (layout = $layout, T = $T)" for layout in TOY_LAYOUTS, T in TEST_TYPES
     extent = 200
     net = toy_network(T; layout, extent)
-    want = _toy_expected(layout, 3)
     deg = length.(_incident(net))
     inlets = findall(==(Inlet), net.node_tags)
     outlets = findall(==(Outlet), net.node_tags)
     others = findall(==(Interior), net.node_tags)
 
-    # one Inlet/Outlet pair per layer, nothing else tagged
-    @test length(inlets) == want.units
-    @test length(outlets) == want.units
-    @test length(others) == nvertices(net) - 2 * want.units
+    # one Inlet/Outlet pair, nothing else tagged
+    @test length(inlets) == 1
+    @test length(outlets) == 1
+    @test length(others) == nvertices(net) - 2
     @test all(==(T(1e-3)), net.bcvalues[inlets])
     @test all(==(T(2000)), net.bcvalues[outlets])
     @test all(iszero, net.bcvalues[others])
@@ -112,9 +102,9 @@ end
 end
 
 @testset "toy_network obeys Murray's law at tree junctions (layout = $layout, T = $T)" for layout in TOY_LAYOUTS, T in TEST_TYPES
-    (G, copies, layers) = (3, 4, 3)
+    (G, copies) = (3, 4)
     rc = T(2.6)
-    net = toy_network(T; layout, generations=G, copies, layers)
+    net = toy_network(T; layout, generations=G, copies)
     inc = _incident(net)
     is_capillary(k) = net.radii[k] == rc
     # r_parent³ - Σ r_child³, taking the widest incident vessel as the parent
@@ -126,8 +116,7 @@ end
     # tree junctions: branching vertices that touch no capillary (hubs and internal nodes)
     junctions = filter(v -> length(inc[v]) ≥ 3 && !any(is_capillary, inc[v]), 1:nvertices(net))
     fans = layout ≡ :radial ? copies : 1
-    units = layout ≡ :stacked ? layers : 1
-    @test length(junctions) == units * 2 * (1 + fans * (2^G - 2))
+    @test length(junctions) == 2 * (1 + fans * (2^G - 2))
     bad = filter(v -> !isapprox(murray_residual(v), 0; atol=sqrt(eps(T)) * maximum(net.radii)^3), junctions)
     @test isempty(bad)
 
@@ -136,15 +125,13 @@ end
     @test all(k -> net.radii[k] ≈ rc * T(2)^(T(G + 1) / 3) * cbrt(T(fans)), trunks)
 
     # each ladder has two single-capillary end leaves; the other leaves split exactly into
-    # two capillaries (stacked leaves also carry vertical links, so Murray is not asserted)
-    if layout ≢ :stacked
-        leaves = filter(v -> any(is_capillary, inc[v]), 1:nvertices(net))
-        @test length(leaves) == fans * 2 * 2^G
-        @test count(v -> length(inc[v]) == 2, leaves) == 2 * fans
-        full = filter(v -> length(inc[v]) == 3, leaves)
-        @test length(full) == fans * 2 * (2^G - 1)
-        @test isempty(filter(v -> !isapprox(murray_residual(v), 0; atol=sqrt(eps(T)) * rc^3), full))
-    end
+    # two capillaries
+    leaves = filter(v -> any(is_capillary, inc[v]), 1:nvertices(net))
+    @test length(leaves) == fans * 2 * 2^G
+    @test count(v -> length(inc[v]) == 2, leaves) == 2 * fans
+    full = filter(v -> length(inc[v]) == 3, leaves)
+    @test length(full) == fans * 2 * (2^G - 1)
+    @test isempty(filter(v -> !isapprox(murray_residual(v), 0; atol=sqrt(eps(T)) * rc^3), full))
 end
 
 #--------------------------------------------------------------------------------# Geometry
@@ -152,7 +139,7 @@ end
 @testset "toy_network flat geometry ($T)" for T in TEST_TYPES
     (G, extent, width) = (3, T(200), T(100))
     n = 2^G
-    net = toy_network(T; generations=G, extent, width)
+    net = toy_network(T; layout=:flat, generations=G, extent, width)
     inc = _incident(net)
     leaves = filter(v -> any(k -> net.radii[k] == T(2.6), inc[v]), 1:nvertices(net))
     arterial = sort(map(v -> net.vertices[v][2], filter(v -> net.vertices[v][1] < extent / 2, leaves)))
@@ -168,9 +155,6 @@ end
     # hubs at 0.15 and 0.85 of the extent
     hubs = filter(v -> net.vertices[v][2] == 0 && net.node_tags[v] == Interior, 1:nvertices(net))
     @test sort(map(v -> net.vertices[v][1], hubs)) ≈ [T(0.15) * extent, T(0.85) * extent]
-    # the default network is the textbook size
-    @test nvertices(toy_network(T)) == 32
-    @test nelements(toy_network(T)) == 45
 end
 
 @testset "toy_network volumetric geometry (G = $G, $T)" for G in 1:4, T in TEST_TYPES
@@ -190,41 +174,12 @@ end
     @test all(v -> abs(v[2]) < width / 2 && abs(v[3]) < width / 2, net.vertices)
     if G == 1
         # one split means no z split: identical to :flat
-        flat = toy_network(T; generations=G)
+        flat = toy_network(T; layout=:flat, generations=G)
         @test net.vertices == flat.vertices
         @test net.elements == flat.elements
         @test net.radii == flat.radii
     else
         @test length(zs) > 1
-    end
-end
-
-@testset "toy_network stacked geometry (layers = $layers, $T)" for layers in 1:4, T in TEST_TYPES
-    (G, width) = (2, T(100))
-    n = 2^G
-    pitch = width / n
-    net = toy_network(T; layout=:stacked, generations=G, width, layers)
-    zs = sort(unique(map(v -> v[3], net.vertices)))
-    vertical = filter(e -> (net.vertices[e[2]] - net.vertices[e[1]])[1:2] == [0, 0],
-        net.elements)
-
-    @test zs ≈ map(ℓ -> (ℓ - 1) * pitch, 1:layers)
-    # corresponding arterial and venous leaves of adjacent layers are joined by one-pitch
-    # capillaries; the trunks and hubs are not linked
-    @test length(vertical) == (layers - 1) * 2n
-    @test all(e -> norm(net.vertices[e[2]] - net.vertices[e[1]]) ≈ pitch, vertical)
-    # each layer is an exact copy of :flat shifted in z
-    flat = toy_network(T; generations=G, width)
-    nv1 = nvertices(flat)
-    for ℓ in 1:layers
-        layer = net.vertices[(ℓ-1)*nv1+1:ℓ*nv1]
-        @test layer ≈ map(v -> v + SVector{3,T}(0, 0, (ℓ - 1) * pitch), flat.vertices)
-    end
-    if layers == 1
-        @test net.vertices == flat.vertices
-        @test net.elements == flat.elements
-        @test net.radii == flat.radii
-        @test net.node_tags == flat.node_tags
     end
 end
 
@@ -253,7 +208,7 @@ end
     @test isempty(_asymmetric_elements(trees, rot; atol=1e-3))
 
     if copies == 1
-        flat = toy_network(T; generations=G)
+        flat = toy_network(T; layout=:flat, generations=G)
         @test net.vertices == flat.vertices
         @test net.elements == flat.elements
         @test net.radii == flat.radii
@@ -269,14 +224,14 @@ end
         # the venous tree is the x-mirror of the arterial tree
         @test isempty(_asymmetric_vertices(net, mirror; atol=1e-3))
         # with the chiral ladder, the whole element set is symmetric under a half-turn
-        @test isempty(_asymmetric_elements(net, _half_turn(layout, extent); atol=1e-3))
+        @test isempty(_asymmetric_elements(net, _half_turn(extent); atol=1e-3))
     end
     # and the ladder really is chiral: a pure x-mirror does not preserve the elements
     @test !isempty(_asymmetric_elements(toy_network(T; layout, extent), p -> typeof(p)(extent - p[1], p[2], p[3]); atol=1e-3))
 end
 
 @testset "toy_network scales with extent and width ($T)" for T in TEST_TYPES
-    net = toy_network(T; extent=10, width=4, capillary_radius=0.5, generations=2)
+    net = toy_network(T; layout=:flat, extent=10, width=4, capillary_radius=0.5, generations=2)
     xs = map(v -> v[1], net.vertices)
     ys = map(v -> v[2], net.vertices)
 
@@ -284,7 +239,19 @@ end
     @test maximum(abs, ys) ≈ T(4) / 2 * (1 - T(1) / 4)
     @test count(==(T(0.5)), net.radii) == 2 * 4 - 1
     # radii are linear in capillary_radius
-    @test net.radii ≈ toy_network(T; generations=2).radii .* (T(0.5) / T(2.6))
+    @test net.radii ≈ toy_network(T; layout=:flat, generations=2).radii .* (T(0.5) / T(2.6))
+end
+
+@testset "toy_network defaults to the volumetric layout ($T)" for T in TEST_TYPES
+    net = toy_network(T)
+    volumetric = toy_network(T; layout=:volumetric)
+
+    @test net.vertices == volumetric.vertices
+    @test net.elements == volumetric.elements
+    @test net.radii == volumetric.radii
+    @test nvertices(net) == 32
+    @test nelements(net) == 45
+    @test any(v -> v[3] ≠ 0, net.vertices)  # genuinely 3D, not the flat picture
 end
 
 @testset "toy_network is deterministic and precision-preserving (layout = $layout)" for layout in TOY_LAYOUTS
@@ -331,7 +298,7 @@ end
     @test_throws ArgumentError toy_network(; layout=:bogus)
     @test_throws ArgumentError toy_network(; layout="flat")
     @test_throws ArgumentError toy_network(; generations=0)
-    @test_throws ArgumentError toy_network(; layout=:stacked, layers=0)
+    @test_throws ArgumentError toy_network(; layout=:stacked)  # removed layout
     @test_throws ArgumentError toy_network(; layout=:radial, copies=0)
     @test_throws ArgumentError toy_network(; extent=0)
     @test_throws ArgumentError toy_network(; width=-1)

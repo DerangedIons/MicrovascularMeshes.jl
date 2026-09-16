@@ -1,6 +1,6 @@
 #!/usr/bin/env julia
 #
-# Standalone demo of toy_network: the four layouts of the hand-built
+# Standalone demo of toy_network: the three layouts of the hand-built
 # arteriole → capillary ladder → venule fixture, side by side.
 #
 # Run it directly from a fresh checkout — no environment setup required:
@@ -25,15 +25,15 @@ using IdealizedMicrovasculature
 
 #--------------------------------------------------------------------------------# Build
 
+# layout, panel title, and grid position: the wide flat picture spans the top row
 layouts = (
-    (:flat, "flat — the textbook picture (top-down)"),
-    (:volumetric, "volumetric — splits alternate y and z"),
-    (:stacked, "stacked — 3 flat layers joined leaf to leaf"),
-    (:radial, "radial — 4 flat fans rotated about x"),
+    (:flat, "flat — the textbook picture (top-down)", (1, 1:2)),
+    (:volumetric, "volumetric (default) — splits alternate y and z", (2, 1)),
+    (:radial, "radial — 4 flat fans rotated about x", (2, 2)),
 )
-networks = map(((layout, _),) -> toy_network(; layout), layouts)
+networks = map(((layout, _, _),) -> toy_network(; layout), layouts)
 
-foreach(layouts, networks) do (layout, _), net
+foreach(layouts, networks) do (layout, _, _), net
     println(rpad(":$layout", 12), "$(nvertices(net)) vertices, $(nelements(net)) elements")
 end
 
@@ -59,12 +59,12 @@ function panel!(fig, pos, net, title; top_down=false)
     return ax
 end
 
-fig = Figure(size=(1500, 1200))
+fig = Figure(size=(1500, 1300))
 Label(fig[0, 1:2], "toy_network layouts — color is vessel radius (Murray's law), " *
     "red = inlet, blue = outlet"; fontsize=22, font=:bold)
 
-foreach(enumerate(zip(layouts, networks))) do (i, ((layout, title), net))
-    panel!(fig, fldmod1(i, 2), net, title; top_down=layout ≡ :flat)
+foreach(layouts, networks) do (layout, title, pos), net
+    panel!(fig, pos, net, title; top_down=layout ≡ :flat)
 end
 
 snapshot = joinpath(@__DIR__, "demo_toy.png")
