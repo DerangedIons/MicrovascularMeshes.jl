@@ -1,15 +1,15 @@
-# IdealizedMicrovasculature.jl
+# MicrovascularMeshes.jl
 
-Generates synthetic, idealized myocardial microvascular networks.
+Generates synthetic, idealized myocardial microvascular meshes (geometry, topology, radii, boundary tags) — geometry only, no flow or transport; the physics lives downstream in Capillarium.jl.
 
 ## Key files
-- module and exports: `src/IdealizedMicrovasculature.jl`
+- module and exports: `src/MicrovascularMeshes.jl`
 - types: `src/types.jl`
 - generation pipeline, in stage order: `src/voronoi.jl` (planar capillary graph) → `src/trees.jl` (arterial/venous trees) → `src/extrude.jl` (2D → 3D) → `src/prune.jl`
 - top-level driver: `src/generate.jl`
 - hand-built deterministic test/demo fixture: `src/toy.jl` (`toy_network`, independent of the generation pipeline)
 - region definitions: `src/domains.jl`
-- plotting: `ext/IdealizedMicrovasculatureMakieExt.jl` (loads with Makie)
+- plotting: `ext/MicrovascularMeshesMakieExt.jl` (loads with Makie)
 
 ## Gotchas
 - The four generation stages are order-dependent and each consumes the previous stage's output — read `src/generate.jl` first to see the pipeline before changing any single stage.

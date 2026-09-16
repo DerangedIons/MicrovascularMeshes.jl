@@ -1,10 +1,10 @@
-using IdealizedMicrovasculature
+using MicrovascularMeshes
 using LinearAlgebra: dot, norm
 using Random
 using StaticArrays
 using Test
 
-const IM = IdealizedMicrovasculature
+const MM = MicrovascularMeshes
 
 # Every type-parametric testset is exercised over each of these element types.
 const TEST_TYPES = (Float64, Float32)
@@ -28,7 +28,7 @@ function ncomponents(net)
     return length(Set(root(v) for v in 1:n))
 end
 
-@testset "IdealizedMicrovasculature.jl" begin
+@testset "MicrovascularMeshes.jl" begin
     include("test_voronoi.jl")
     include("test_extrude.jl")
     include("test_trees.jl")

@@ -1,11 +1,11 @@
-[![CI](https://github.com/DerangedIons/IdealizedMicrovasculature.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/DerangedIons/IdealizedMicrovasculature.jl/actions/workflows/CI.yml)
-[![Docs Build](https://github.com/DerangedIons/IdealizedMicrovasculature.jl/actions/workflows/Docs.yml/badge.svg)](https://github.com/DerangedIons/IdealizedMicrovasculature.jl/actions/workflows/Docs.yml)
-[![Stable Docs](https://img.shields.io/badge/docs-stable-blue)](https://DerangedIons.github.io/IdealizedMicrovasculature.jl/stable/)
-[![Dev Docs](https://img.shields.io/badge/docs-dev-blue)](https://DerangedIons.github.io/IdealizedMicrovasculature.jl/dev/)
+[![CI](https://github.com/DerangedIons/MicrovascularMeshes.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/DerangedIons/MicrovascularMeshes.jl/actions/workflows/CI.yml)
+[![Docs Build](https://github.com/DerangedIons/MicrovascularMeshes.jl/actions/workflows/Docs.yml/badge.svg)](https://github.com/DerangedIons/MicrovascularMeshes.jl/actions/workflows/Docs.yml)
+[![Stable Docs](https://img.shields.io/badge/docs-stable-blue)](https://DerangedIons.github.io/MicrovascularMeshes.jl/stable/)
+[![Dev Docs](https://img.shields.io/badge/docs-dev-blue)](https://DerangedIons.github.io/MicrovascularMeshes.jl/dev/)
 
-# IdealizedMicrovasculature.jl
+# MicrovascularMeshes.jl
 
-Generate synthetic, idealized myocardial microvascular networks.
+Generate synthetic, idealized myocardial microvascular meshes: the vessel geometry, topology, radii, and boundary tags only. No flow or transport is solved here; see [Capillarium.jl](https://github.com/DerangedIons/Capillarium.jl) for that.
 
 The network is built in four stages:
 
@@ -29,7 +29,7 @@ of radius `sphere_radius` whose feeding/draining vessels pierce the curved dome 
 
 ```julia
 using Random
-using IdealizedMicrovasculature
+using MicrovascularMeshes
 
 # reproducible network with the default parameters
 net = generate_network(MersenneTwister(0))
@@ -51,7 +51,7 @@ backend (`GLMakie` for an interactive window, `CairoMakie` for static output):
 
 ```julia
 using GLMakie
-using IdealizedMicrovasculature
+using MicrovascularMeshes
 
 net = generate_network()
 plotnetwork(net)   # vessels colored by radius; inlet/outlet nodes highlighted

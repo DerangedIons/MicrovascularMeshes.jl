@@ -3,7 +3,7 @@ radius2(v) = v[1]^2 + v[2]^2 + v[3]^2
 
 @testset "dome_frame orthonormal ($T)" for T in TEST_TYPES
     dot3(a, b) = a[1] * b[1] + a[2] * b[2] + a[3] * b[3]
-    n, t1, t2 = IM.dome_frame(T, T(0.7), T(1.3))
+    n, t1, t2 = MM.dome_frame(T, T(0.7), T(1.3))
     @test dot3(n, n) ≈ 1
     @test dot3(t1, t1) ≈ 1
     @test dot3(t2, t2) ≈ 1
@@ -14,7 +14,7 @@ end
 
 @testset "hex_grid_disk_points ($T)" for T in TEST_TYPES
     cfg = NetworkConfig{T}(domain = HalfSphere())
-    points, a = IM.hex_grid_disk_points(MersenneTwister(42), cfg)
+    points, a = MM.hex_grid_disk_points(MersenneTwister(42), cfg)
     @test a isa T
     @test a > 0
     @test !isempty(points)
@@ -24,27 +24,27 @@ end
 @testset "voronoi_network disk predicate ($T)" for T in TEST_TYPES
     cfg = NetworkConfig{T}(domain = HalfSphere())
     R = cfg.sphere_radius
-    points, _ = IM.hex_grid_disk_points(MersenneTwister(42), cfg)
+    points, _ = MM.hex_grid_disk_points(MersenneTwister(42), cfg)
 
-    verts, edges = IM.voronoi_network(points, R; in_region = disk(R))
+    verts, edges = MM.voronoi_network(points, R; in_region = disk(R))
     @test !isempty(verts)
     @test !isempty(edges)
     @test all(v -> v[1]^2 + v[2]^2 <= R^2, verts)
 
     # the default (square) predicate is unaffected by the new keyword
-    sq, _ = IM.voronoi_network(points, R)
-    sq2, _ = IM.voronoi_network(points, R)
+    sq, _ = MM.voronoi_network(points, R)
+    sq2, _ = MM.voronoi_network(points, R)
     @test sq == sq2
 end
 
 @testset "extrude_dome! ($T)" for T in TEST_TYPES
     cfg = NetworkConfig{T}(domain = HalfSphere())
     R = cfg.sphere_radius
-    points, a = IM.hex_grid_disk_points(MersenneTwister(7), cfg)
-    v2d, e2d = IM.voronoi_network(points, R; in_region = disk(R))
+    points, a = MM.hex_grid_disk_points(MersenneTwister(7), cfg)
+    v2d, e2d = MM.voronoi_network(points, R; in_region = disk(R))
 
     net = VascularNetwork{T}()
-    gid, nlayers = IM.extrude_dome!(net, MersenneTwister(0), v2d, e2d, a, R, cfg)
+    gid, nlayers = MM.extrude_dome!(net, MersenneTwister(0), v2d, e2d, a, R, cfg)
 
     @test eltype(net.vertices) == SVector{3,T}
     @test eltype(net.radii) == T

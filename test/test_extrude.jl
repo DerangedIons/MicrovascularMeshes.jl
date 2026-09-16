@@ -1,9 +1,9 @@
 @testset "drop_horizontal_edges" begin
     rng = MersenneTwister(1)
-    @test length(IM.drop_horizontal_edges(rng, 10, 0.0)) == 10
-    @test length(IM.drop_horizontal_edges(rng, 10, 1.0)) == 0
+    @test length(MM.drop_horizontal_edges(rng, 10, 0.0)) == 10
+    @test length(MM.drop_horizontal_edges(rng, 10, 1.0)) == 0
 
-    kept = IM.drop_horizontal_edges(rng, 10, 0.5)
+    kept = MM.drop_horizontal_edges(rng, 10, 0.5)
     @test length(kept) == 5
     @test allunique(kept)
     @test issorted(kept)
@@ -16,7 +16,7 @@ end
     cfg = NetworkConfig{T}(num_layers = 3, drop_fraction_hex_grid = 0.0)
 
     net = VascularNetwork{T}()
-    nvpl = IM.extrude_capillary!(net, MersenneTwister(0), verts2d, edges2d, one(T), cfg)
+    nvpl = MM.extrude_capillary!(net, MersenneTwister(0), verts2d, edges2d, one(T), cfg)
 
     @test eltype(net.vertices) == SVector{3,T}
     @test eltype(net.radii) == T

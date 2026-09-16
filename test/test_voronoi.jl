@@ -1,6 +1,6 @@
 @testset "hex_grid_points ($T)" for T in TEST_TYPES
     cfg = NetworkConfig{T}()
-    points, a = IM.hex_grid_points(MersenneTwister(42), cfg)
+    points, a = MM.hex_grid_points(MersenneTwister(42), cfg)
     @test a isa T
     @test a > 0
     @test !isempty(points)
@@ -9,8 +9,8 @@ end
 
 @testset "voronoi_network ($T)" for T in TEST_TYPES
     cfg = NetworkConfig{T}()
-    points, _ = IM.hex_grid_points(MersenneTwister(42), cfg)
-    verts, edges = IM.voronoi_network(points, cfg.region_size)
+    points, _ = MM.hex_grid_points(MersenneTwister(42), cfg)
+    verts, edges = MM.voronoi_network(points, cfg.region_size)
 
     @test eltype(verts) == SVector{2,T}
     @test !isempty(verts)
@@ -24,7 +24,7 @@ end
     @test all(e -> e[1] != e[2], edges)
 
     # tessellating the same points twice gives the same graph
-    verts2, edges2 = IM.voronoi_network(points, cfg.region_size)
+    verts2, edges2 = MM.voronoi_network(points, cfg.region_size)
     @test verts == verts2
     @test edges == edges2
 end

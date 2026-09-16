@@ -3,14 +3,14 @@
     for p in (SVector{3,T}(0, 0, 0), SVector{3,T}(1, 0, 0), SVector{3,T}(2, 0, 0),  # main path
               SVector{3,T}(0, 5, 0), SVector{3,T}(1, 5, 0),                          # orphan pair
               SVector{3,T}(0, 9, 0))                                                 # isolated vertex
-        IM.add_vertex!(net, p)
+        MM.add_vertex!(net, p)
     end
-    IM.add_element!(net, 1, 2, one(T))
-    IM.add_element!(net, 2, 3, one(T))
-    IM.add_element!(net, 4, 5, one(T))
-    IM.set_bc!(net, 1, Inlet, T(1e-3))
+    MM.add_element!(net, 1, 2, one(T))
+    MM.add_element!(net, 2, 3, one(T))
+    MM.add_element!(net, 4, 5, one(T))
+    MM.set_bc!(net, 1, Inlet, T(1e-3))
 
-    pruned = IM.prune_disconnected(net)
+    pruned = MM.prune_disconnected(net)
 
     @test nvertices(pruned) == 3                       # only the main component survives
     @test nelements(pruned) == 2
@@ -24,12 +24,12 @@ end
 @testset "prune_disconnected keeps connected nets unchanged ($T)" for T in TEST_TYPES
     net = VascularNetwork{T}()
     for p in (SVector{3,T}(0, 0, 0), SVector{3,T}(1, 0, 0), SVector{3,T}(2, 0, 0))
-        IM.add_vertex!(net, p)
+        MM.add_vertex!(net, p)
     end
-    IM.add_element!(net, 1, 2, one(T))
-    IM.add_element!(net, 2, 3, one(T))
+    MM.add_element!(net, 1, 2, one(T))
+    MM.add_element!(net, 2, 3, one(T))
 
-    pruned = IM.prune_disconnected(net)
+    pruned = MM.prune_disconnected(net)
     @test pruned.vertices == net.vertices
     @test pruned.elements == net.elements
     @test pruned.radii == net.radii

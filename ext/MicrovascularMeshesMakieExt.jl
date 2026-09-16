@@ -1,9 +1,9 @@
-module IdealizedMicrovasculatureMakieExt
+module MicrovascularMeshesMakieExt
 
-using IdealizedMicrovasculature
+using MicrovascularMeshes
 import Makie
 
-function IdealizedMicrovasculature.plotnetwork(net::VascularNetwork; kwargs...)
+function MicrovascularMeshes.plotnetwork(net::VascularNetwork; kwargs...)
     fig = Makie.Figure()
     ax = Makie.Axis3(fig[1, 1]; aspect = :data,
         title = "Idealized myocardial microvascular network",
@@ -12,7 +12,7 @@ function IdealizedMicrovasculature.plotnetwork(net::VascularNetwork; kwargs...)
     return fig
 end
 
-function IdealizedMicrovasculature.plotnetwork!(ax, net::VascularNetwork;
+function MicrovascularMeshes.plotnetwork!(ax, net::VascularNetwork;
         colormap = :viridis, linewidth = 1.5, show_nodes = true)
     verts = net.vertices
     nelem = length(net.elements)
@@ -45,4 +45,4 @@ function IdealizedMicrovasculature.plotnetwork!(ax, net::VascularNetwork;
     return ax
 end
 
-end # module IdealizedMicrovasculatureMakieExt
+end # module MicrovascularMeshesMakieExt

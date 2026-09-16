@@ -1,4 +1,4 @@
-module IdealizedMicrovasculature
+module MicrovascularMeshes
 
 using Random: AbstractRNG, default_rng, rand, randn, randperm
 using LinearAlgebra: cross, dot, norm
@@ -38,11 +38,11 @@ These functions are implemented by a package extension and require a Makie backe
 
 ### Examples
 ```julia
-using GLMakie, IdealizedMicrovasculature
+using GLMakie, MicrovascularMeshes
 plotnetwork(generate_network())
 ```
 """
 function plotnetwork end
 function plotnetwork! end
 
-end # module IdealizedMicrovasculature
+end # module MicrovascularMeshes

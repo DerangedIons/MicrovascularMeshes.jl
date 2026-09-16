@@ -8,7 +8,7 @@
 #     julia examples/generate_and_plot.jl
 #
 # The script uses its own environment in examples/ and develops the
-# IdealizedMicrovasculature package from this repository, so no prior setup is
+# MicrovascularMeshes package from this repository, so no prior setup is
 # needed. The first run precompiles GLMakie and may take a few minutes.
 
 using Pkg
@@ -16,7 +16,7 @@ Pkg.activate(@__DIR__)
 
 using Random
 using GLMakie
-using IdealizedMicrovasculature
+using MicrovascularMeshes
 
 # Reproducible network. Drop the RNG argument for a different one each run, or
 # pass a NetworkConfig to change the size/density, e.g.

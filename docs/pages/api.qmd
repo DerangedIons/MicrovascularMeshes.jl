@@ -7,22 +7,22 @@ toc-depth: 4
 ```{julia}
 #| echo: false
 #| output: false
-using IdealizedMicrovasculature
+using MicrovascularMeshes
 ```
 
 ```{julia}
 #| echo: false
 #| output: asis
-export_names = filter(!=(:IdealizedMicrovasculature), names(IdealizedMicrovasculature))
+export_names = filter(!=(:MicrovascularMeshes), names(MicrovascularMeshes))
 
 classify(b) = b isa Type ? :type : b isa Function ? :function : :constant
 
 for (kind, label) in [(:type, "Types"), (:function, "Functions"), (:constant, "Constants")]
-    items = filter(n -> classify(getfield(IdealizedMicrovasculature, n)) == kind, export_names)
+    items = filter(n -> classify(getfield(MicrovascularMeshes, n)) == kind, export_names)
     isempty(items) && continue
     println("## $label\n")
     for name in items
-        binding = getfield(IdealizedMicrovasculature, name)
+        binding = getfield(MicrovascularMeshes, name)
         doc = string(Docs.doc(binding))
         println("""
         ::: {.card .mb-3}

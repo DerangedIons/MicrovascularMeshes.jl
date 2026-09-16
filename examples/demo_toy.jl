@@ -8,7 +8,7 @@
 #     julia examples/demo_toy.jl
 #
 # The script bootstraps its own throwaway environment, develops the
-# IdealizedMicrovasculature package from this repository, and adds CairoMakie
+# MicrovascularMeshes package from this repository, and adds CairoMakie
 # (a headless, no-GPU backend that writes a static PNG). Swap CairoMakie for
 # GLMakie below for an interactive, rotatable window. Packages are cached
 # globally, so only the first run is slow.
@@ -21,7 +21,7 @@ Pkg.develop(; path=repo_root)
 Pkg.add("CairoMakie")
 
 using CairoMakie
-using IdealizedMicrovasculature
+using MicrovascularMeshes
 
 #--------------------------------------------------------------------------------# Build
 
