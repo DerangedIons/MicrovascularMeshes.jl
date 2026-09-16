@@ -470,6 +470,47 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 </div>
 </div>
+<div class="card mb-3">
+<section id="toy_network" class="level4 card-header api-item-header">
+<h4 class="anchored" data-anchor-id="toy_network"><code>toy_network</code></h4>
+</section>
+<div class="card-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">toy_network</span>(T<span class="op">=</span><span class="dt">Float64</span>; layout<span class="op">=:</span>volumetric, kwargs<span class="op">...</span>) <span class="op">-&gt;</span> VascularNetwork{T}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Build a small, deterministic <a href="@ref"><code>VascularNetwork</code></a> shaped like the textbook microcirculation diagram: a single <a href="@ref"><code>Inlet</code></a> on the left feeds a bifurcating arterial tree, its <code>2^generations</code> leaves drain through an anastomotic capillary bed, and a venous tree converges on a single <a href="@ref"><code>Outlet</code></a> on the right.</p>
+<p>Unlike <a href="@ref"><code>generate_network</code></a> it is pure (no rng) and small, and every count, radius, and symmetry is known in closed form — a fixture for testing solvers, exporters, and <a href="@ref"><code>smooth_network</code></a>, which supplies the curvature when composed with it.</p>
+<p>Along <code>x</code>, a trunk takes the first 15% of <code>extent</code>, the arterial fan the next 25%, and the capillary bed the middle 20%; the venous tree is the mirror image across <code>x = extent/2</code>. Each tree is a binary fan in which every node sits at the centroid of its descendant leaves. The capillary bed is a ladder — arterial leaf <code>k</code> feeds venous leaves <code>k</code> and <code>k+1</code> — so it closes loops through the trees. Because every rung leans the same way, the network is symmetric under a half-turn about the bed center rather than a pure <code>x</code>-mirror.</p>
+<p>Radii follow Murray’s law (<code>r_parent³ = Σ r_child³</code>) up from <code>capillary_radius</code>: the vessel entering a generation-<code>g</code> node has radius <code>capillary_radius * 2^((generations + 1 - g)/3)</code>. Murray’s law holds exactly at every tree junction; the leaves at the two ends of each ladder feed only one capillary instead of two.</p>
+<p>The inlet (velocity <code>1e-3</code>) and outlet (pressure <code>2000</code>) are degree-1 vertices; every other vertex is <code>Interior</code> with a zero boundary value.</p>
+<section id="layouts" class="level3">
+<h3 class="anchored" data-anchor-id="layouts">Layouts</h3>
+<p>With <code>n = 2^generations</code> leaves per tree:</p>
+<ul>
+<li><code>:volumetric</code> (default) — generations alternate between splitting in <code>y</code> and in <code>z</code>, so the leaves form a <code>2^⌈generations/2⌉ × 2^⌊generations/2⌋</code> grid in the <code>y</code>–<code>z</code> plane. The leaf order is a Z-order curve, so a few ladder rungs jump across the grid. <code>4n</code> vertices and <code>6n - 3</code> elements, of which <code>2n - 1</code> are capillaries.</li>
+<li><code>:flat</code> — the textbook picture: every node in the <code>z = 0</code> plane, leaves evenly spaced in <code>y</code> at pitch <code>width/n</code>. Counts match <code>:volumetric</code>.</li>
+<li><code>:radial</code> — <code>copies</code> of <code>:flat</code> rotated about the <code>x</code> axis onto planes <code>π/copies</code> apart, sharing one inlet, one outlet, and both trunks, whose radius grows by <code>cbrt(copies)</code> to keep Murray’s law at the hubs. <code>2 * (2 + copies * (2n - 2))</code> vertices and <code>2 * (1 + copies * (2n - 2)) + copies * (2n - 1)</code> elements.</li>
+</ul>
+</section>
+<section id="keyword-arguments-3" class="level3">
+<h3 class="anchored" data-anchor-id="keyword-arguments-3">Keyword Arguments</h3>
+<ul>
+<li><code>layout</code>: one of <code>:volumetric</code>, <code>:flat</code>, or <code>:radial</code> (default <code>:volumetric</code>).</li>
+<li><code>generations</code>: bifurcations per tree, <code>≥ 1</code>; each tree has <code>2^generations</code> leaves (default <code>3</code>).</li>
+<li><code>extent</code>: inlet-to-outlet distance along <code>x</code> (default <code>200</code>).</li>
+<li><code>width</code>: transverse spread of the leaves (default <code>100</code>).</li>
+<li><code>capillary_radius</code>: radius of every capillary, matching <code>NetworkConfig().radius_default_small_vessels</code> by default (<code>2.6</code>).</li>
+<li><code>copies</code>: number of rotated copies, <code>≥ 1</code>; <code>:radial</code> only (default <code>4</code>).</li>
+</ul>
+</section>
+<section id="examples-6" class="level3">
+<h3 class="anchored" data-anchor-id="examples-6">Examples</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Random</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>net <span class="op">=</span> <span class="fu">toy_network</span>()                                   <span class="co"># 32 vertices, 45 elements</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>net <span class="op">=</span> <span class="fu">toy_network</span>(; layout<span class="op">=:</span>flat, generations<span class="op">=</span><span class="fl">2</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>net <span class="op">=</span> <span class="fu">toy_network</span>(<span class="dt">Float32</span>; layout<span class="op">=:</span>radial, copies<span class="op">=</span><span class="fl">3</span>)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>curved <span class="op">=</span> <span class="fu">smooth_network</span>(<span class="fu">MersenneTwister</span>(<span class="fl">0</span>), <span class="fu">toy_network</span>(; generations<span class="op">=</span><span class="fl">4</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</div>
+</div>
 </section>
 <section id="constants" class="level2">
 <h2 class="anchored" data-anchor-id="constants">Constants</h2>
@@ -478,7 +519,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 class="anchored" data-anchor-id="inlet"><code>Inlet</code></h4>
 </section>
 <div class="card-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>NodeTag</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>NodeTag</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Boundary role of a network vertex. Determines whether (and what kind of) a boundary condition applies to the node.</p>
 <ul>
 <li><code>Interior</code> — interior node, no boundary condition.</li>
@@ -494,7 +535,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 class="anchored" data-anchor-id="inletvenule"><code>InletVenule</code></h4>
 </section>
 <div class="card-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>NodeTag</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>NodeTag</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Boundary role of a network vertex. Determines whether (and what kind of) a boundary condition applies to the node.</p>
 <ul>
 <li><code>Interior</code> — interior node, no boundary condition.</li>
@@ -510,7 +551,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 class="anchored" data-anchor-id="interior"><code>Interior</code></h4>
 </section>
 <div class="card-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>NodeTag</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>NodeTag</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Boundary role of a network vertex. Determines whether (and what kind of) a boundary condition applies to the node.</p>
 <ul>
 <li><code>Interior</code> — interior node, no boundary condition.</li>
@@ -526,7 +567,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 class="anchored" data-anchor-id="noflow"><code>NoFlow</code></h4>
 </section>
 <div class="card-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>NodeTag</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>NodeTag</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Boundary role of a network vertex. Determines whether (and what kind of) a boundary condition applies to the node.</p>
 <ul>
 <li><code>Interior</code> — interior node, no boundary condition.</li>
@@ -542,7 +583,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 class="anchored" data-anchor-id="outlet"><code>Outlet</code></h4>
 </section>
 <div class="card-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>NodeTag</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>NodeTag</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Boundary role of a network vertex. Determines whether (and what kind of) a boundary condition applies to the node.</p>
 <ul>
 <li><code>Interior</code> — interior node, no boundary condition.</li>
