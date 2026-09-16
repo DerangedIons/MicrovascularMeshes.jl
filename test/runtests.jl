@@ -34,6 +34,7 @@ end
     include("test_trees.jl")
     include("test_prune.jl")
     include("test_smooth.jl")
+    include("test_toy.jl")
     include("test_generate.jl")
     include("test_halfsphere.jl")
 end

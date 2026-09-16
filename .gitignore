@@ -19,3 +19,4 @@ docs/*_files/
 !docs/assets/_version-selector.html
 *.jpg
 examples/*.png
+handoffs/
