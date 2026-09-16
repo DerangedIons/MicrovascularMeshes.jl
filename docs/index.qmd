@@ -1,12 +1,12 @@
 ---
-title: "IdealizedMicrovasculature.jl"
+title: "MicrovascularMeshes.jl"
 ---
 
-Welcome to the documentation for **IdealizedMicrovasculature.jl**.
+Welcome to the documentation for **MicrovascularMeshes.jl**.
 
 ## Overview
 
-IdealizedMicrovasculature.jl is a Julia package that ...
+MicrovascularMeshes.jl is a Julia package that ...
 
 ## Quickstart
 

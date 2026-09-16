@@ -2,7 +2,7 @@
 function _stub_network(::Type{T}, n = 6) where {T}
     net = VascularNetwork{T}()
     for k in 1:n
-        IM.add_vertex!(net, SVector{3,T}(k, 0, 0))
+        MM.add_vertex!(net, SVector{3,T}(k, 0, 0))
     end
     return net
 end
@@ -10,7 +10,7 @@ end
 @testset "add_venule! ($T)" for T in TEST_TYPES
     net = _stub_network(T)
     connecting = Int[]
-    IM.add_venule!(net, MersenneTwister(0), NetworkConfig{T}(), one(T), connecting)
+    MM.add_venule!(net, MersenneTwister(0), NetworkConfig{T}(), one(T), connecting)
 
     @test eltype(net.vertices) == SVector{3,T}
     @test nvertices(net) == 6 + 11               # 11 venule vertices
@@ -24,7 +24,7 @@ end
 @testset "add_arteriole! ($T)" for T in TEST_TYPES
     net = _stub_network(T)
     connecting = Int[]
-    IM.add_arteriole!(net, MersenneTwister(0), NetworkConfig{T}(), connecting;
+    MM.add_arteriole!(net, MersenneTwister(0), NetworkConfig{T}(), connecting;
         start = SVector{3,T}(0, 0, 0),
         finish = SVector{3,T}(0, 0, 1),
         trunk_radius = T(9),
@@ -45,13 +45,13 @@ end
 
 @testset "enforce_min_radius! ($T)" for T in TEST_TYPES
     net = VascularNetwork{T}()
-    IM.add_vertex!(net, SVector{3,T}(0, 0, 0))
-    IM.add_vertex!(net, SVector{3,T}(1, 0, 0))
-    IM.add_vertex!(net, SVector{3,T}(2, 0, 0))
-    IM.add_element!(net, 1, 2, 0.5)              # incident to vertex 1, thin — widened
-    IM.add_element!(net, 1, 3, 99.0)            # incident to vertex 1, already wide — kept
+    MM.add_vertex!(net, SVector{3,T}(0, 0, 0))
+    MM.add_vertex!(net, SVector{3,T}(1, 0, 0))
+    MM.add_vertex!(net, SVector{3,T}(2, 0, 0))
+    MM.add_element!(net, 1, 2, 0.5)              # incident to vertex 1, thin — widened
+    MM.add_element!(net, 1, 3, 99.0)            # incident to vertex 1, already wide — kept
     cfg = NetworkConfig{T}()
-    IM.enforce_min_radius!(net, [1], cfg)
+    MM.enforce_min_radius!(net, [1], cfg)
 
     @test net.radii[1] == T(5) * cfg.scale_factor_arteriole
     @test net.radii[2] == 99                    # above the minimum, left untouched

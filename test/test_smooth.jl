@@ -2,17 +2,17 @@
 function _bent_path(::Type{T}) where {T}
     net = VascularNetwork{T}()
     for p in (SVector{3,T}(0, 0, 0), SVector{3,T}(1, 0, 0), SVector{3,T}(2, 1, 0))
-        IM.add_vertex!(net, p)
+        MM.add_vertex!(net, p)
     end
-    IM.add_element!(net, 1, 2, one(T))
-    IM.add_element!(net, 2, 3, T(2))
+    MM.add_element!(net, 1, 2, one(T))
+    MM.add_element!(net, 2, 3, T(2))
     return net
 end
 
 @testset "smooth_network invariants and radius inheritance ($T)" for T in TEST_TYPES
     net = _bent_path(T)
-    IM.set_bc!(net, 1, Inlet, T(1e-3))
-    IM.set_bc!(net, 3, Outlet, T(2000))
+    MM.set_bc!(net, 1, Inlet, T(1e-3))
+    MM.set_bc!(net, 3, Outlet, T(2000))
 
     out = smooth_network(MersenneTwister(0), net; max_tilt = T(0), spacing = T(0.25))
 
@@ -40,10 +40,10 @@ end
 @testset "smooth_network keeps a collinear chain exactly straight ($T)" for T in TEST_TYPES
     net = VascularNetwork{T}()
     for p in (SVector{3,T}(0, 0, 0), SVector{3,T}(1, 0, 0), SVector{3,T}(3, 0, 0))
-        IM.add_vertex!(net, p)
+        MM.add_vertex!(net, p)
     end
-    IM.add_element!(net, 1, 2, one(T))
-    IM.add_element!(net, 2, 3, one(T))
+    MM.add_element!(net, 1, 2, one(T))
+    MM.add_element!(net, 2, 3, one(T))
 
     out = smooth_network(MersenneTwister(0), net; max_tilt = T(0), spacing = T(0.5))
 
@@ -80,12 +80,12 @@ end
               SVector{3,T}(0, 0, 0),    # C, the junction
               SVector{3,T}(1, 0, 0),    # B
               SVector{3,T}(0, 1, 0))    # D, the branch tip
-        IM.add_vertex!(net, p)
+        MM.add_vertex!(net, p)
     end
     # branch first, so the winning through pair (A-C, C-B) is not first-encountered
-    IM.add_element!(net, 2, 4, one(T))
-    IM.add_element!(net, 1, 2, one(T))
-    IM.add_element!(net, 2, 3, one(T))
+    MM.add_element!(net, 2, 4, one(T))
+    MM.add_element!(net, 1, 2, one(T))
+    MM.add_element!(net, 2, 3, one(T))
 
     out = smooth_network(MersenneTwister(0), net; max_tilt = T(0), spacing = T(0.25))
 

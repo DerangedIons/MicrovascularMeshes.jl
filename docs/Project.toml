@@ -1,4 +1,4 @@
 [deps]
 JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
-IdealizedMicrovasculature = "24482bbe-ba31-482a-8f07-cc3ff0f9a9db"
+MicrovascularMeshes = "24482bbe-ba31-482a-8f07-cc3ff0f9a9db"
 LocalCoverage = "5f6e1e16-694c-5876-87ef-16b5274f298e"
