@@ -7,7 +7,7 @@ import DelaunayTriangulation as DT
 
 export NodeTag, Interior, NoFlow, Inlet, Outlet, InletVenule
 export AbstractDomain, Cube, HalfSphere
-export NetworkConfig, VascularNetwork, generate_network, smooth_network
+export NetworkConfig, VascularNetwork, generate_network, smooth_network, toy_network
 export nvertices, nelements
 export plotnetwork, plotnetwork!
 
@@ -19,6 +19,7 @@ include("trees.jl")
 include("prune.jl")
 include("smooth.jl")
 include("generate.jl")
+include("toy.jl")
 
 """
     plotnetwork(net; kwargs...) -> Figure
