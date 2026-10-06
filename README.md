@@ -7,6 +7,8 @@
 
 Generate synthetic, idealized myocardial microvascular meshes: the vessel geometry, topology, radii, and boundary tags only. No flow or transport is solved here; see [Capillarium.jl](https://github.com/DerangedIons/Capillarium.jl) for that.
 
+It also generates coordinate-free arteriolar trees whose diameters and lengths follow measured scaling laws (`scaling_tree`, see [below](#scaling-law-trees)).
+
 The network is built in four stages:
 
 1. **Planar capillary graph** — a jittered hexagonal point set is tessellated and the
@@ -42,6 +44,15 @@ net = generate_network(MersenneTwister(0), NetworkConfig(domain = HalfSphere(), 
 
 nvertices(net)   # number of nodes
 nelements(net)   # number of vessel segments
+```
+
+## Scaling-law trees
+
+`scaling_tree` builds a symmetric bifurcating tree whose diameters follow a junction exponent γ (Murray's 3 by default), whose lengths follow `L ∝ D^β`, and whose vessels each scatter about their generation's mean by a lognormal coefficient of variation. It returns a `ScalingTree` (parents, generation, diameter, length) with no coordinates, for callers that need only the hydraulics. The docstring says which literature each exponent and spread comes from.
+
+```julia
+tree = scaling_tree(MersenneTwister(0), 8; leaf_diameter=30.0, leaf_length=600.0, β=1.2,
+                    cv_diameter=0.1, cv_length=0.3)
 ```
 
 ## Visualization

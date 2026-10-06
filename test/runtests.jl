@@ -37,4 +37,5 @@ end
     include("test_toy.jl")
     include("test_generate.jl")
     include("test_halfsphere.jl")
+    include("test_scaling.jl")
 end

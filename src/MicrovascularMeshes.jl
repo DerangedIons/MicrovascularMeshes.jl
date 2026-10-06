@@ -9,6 +9,7 @@ export NodeTag, Interior, NoFlow, Inlet, Outlet, InletVenule
 export AbstractDomain, Cube, HalfSphere
 export NetworkConfig, VascularNetwork, generate_network, smooth_network, toy_network
 export nvertices, nelements
+export ScalingTree, scaling_tree
 export plotnetwork, plotnetwork!
 
 include("domains.jl")
@@ -20,6 +21,7 @@ include("prune.jl")
 include("smooth.jl")
 include("generate.jl")
 include("toy.jl")
+include("scaling.jl")
 
 """
     plotnetwork(net; kwargs...) -> Figure
