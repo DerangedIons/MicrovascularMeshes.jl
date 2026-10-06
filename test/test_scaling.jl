@@ -4,8 +4,8 @@
     # sample CV near 0.95 instead of 0.8. The exponents only need to be off Murray's and
     # nonzero; the sampler, not the anatomy, is under test.
     (depth, D_leaf, L_leaf, γ, β) = (13, 30.0, 600.0, 7 / 3, 1.2)
-    cv_diameter = [fill(0.1, depth - 2); 0.3, 0.2, 0.25]
-    cv_length = [fill(0.3, depth - 2); 0.5, 0.3, 0.8]
+    cv_diameter = [fill(0.1, depth - 2); [0.3, 0.2, 0.25]]
+    cv_length = [fill(0.3, depth - 2); [0.5, 0.3, 0.8]]
     build(seed) = scaling_tree(Xoshiro(seed), depth; leaf_diameter=D_leaf, leaf_length=L_leaf, γ, β, cv_diameter, cv_length)
     t = build(34)
     @test t.diameter == build(34).diameter && t.diameter != build(35).diameter
