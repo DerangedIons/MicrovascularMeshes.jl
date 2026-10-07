@@ -1,4 +1,5 @@
 using MicrovascularMeshes
+using Distributions: Gamma, Normal
 using LinearAlgebra: dot, norm
 using Random
 using StaticArrays

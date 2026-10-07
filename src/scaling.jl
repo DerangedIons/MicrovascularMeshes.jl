@@ -25,7 +25,8 @@ end
 
 """
     scaling_tree([rng=default_rng(),] depth; leaf_diameter, leaf_length, β, γ=3,
-                 cv_diameter=0, cv_length=0) -> ScalingTree
+                 cv_diameter=0, cv_length=0,
+                 diameter_distribution=nothing, length_distribution=nothing) -> ScalingTree
 
 A symmetric tree of `depth` bifurcations whose vessel diameters and lengths follow measured
 scaling laws: each generation has a mean diameter and a mean length set by two exponents, and
@@ -62,6 +63,13 @@ unevenly flow divides among the leaves.
   `cv_diameter` and `cv_length` are each a number for every generation or a vector of
   `depth + 1`, root first. Lengths are drawn before diameters, vessel by vessel, and a quantity
   whose CV is zero everywhere draws nothing.
+- **Other distributions.** To scatter by something other than a lognormal, pass
+  `diameter_distribution` or `length_distribution` in place of the CV: each vessel's factor is
+  then `rand(rng, d)` from its generation's `d`, any sampler such as a Distributions.jl
+  distribution, or a vector of numbers to resample measured factors uniformly. Give one sampler
+  for every generation or a vector of `depth + 1`, root first. The factor scales the
+  generation's mean, so `d` should have mean one: a mean of `m` multiplies the whole generation
+  by `m` and moves it off `γ` and `β`. Every draw must be finite and positive.
 
 **Independent draws overstate heterogeneity.** Every vessel is drawn independently, so `γ`
 holds generation by generation on average, not at every fork. Real trees size a vessel to the
@@ -83,6 +91,8 @@ never through its order-to-order ratios.
 - `β`: the length–diameter exponent; required.
 - `γ`: the junction exponent, positive.
 - `cv_diameter`, `cv_length`: coefficient of variation per generation, `≥ 0`.
+- `diameter_distribution`, `length_distribution`: the per-vessel factor's distribution, in
+  place of the matching CV.
 
 ### Examples
 ```julia
@@ -90,6 +100,8 @@ scaling_tree(3; leaf_diameter=30.0, leaf_length=600.0, β=1)               # Mur
 scaling_tree(6; leaf_diameter=30.0, leaf_length=600.0, β=1.2)             # element exponents
 scaling_tree(Xoshiro(1), 8; leaf_diameter=30.0, leaf_length=600.0, β=1.2,
              cv_diameter=0.1, cv_length=0.3)                               # within-network spread
+scaling_tree(Xoshiro(1), 8; leaf_diameter=30.0, leaf_length=600.0, β=1.2,
+             length_distribution=Gamma(11, 1 / 11))                       # Gamma, CV 0.3 (Distributions.jl)
 ```
 
 ### References
@@ -108,9 +120,18 @@ scaling_tree(Xoshiro(1), 8; leaf_diameter=30.0, leaf_length=600.0, β=1.2,
 - Van Bavel E, Spaan JA (1992) Circ Res 71:1200. PMID 1394880
 - Wischgoll T, Choy JS, Kassab GS (2009) Am J Physiol Heart Circ Physiol 297:H1949. PMID 19749169
 """
-function scaling_tree(rng::AbstractRNG, depth::Integer;
-                      leaf_diameter::Real, leaf_length::Real, β::Real, γ::Real=3,
-                      cv_diameter=0, cv_length=0)
+function scaling_tree(
+    rng::AbstractRNG,
+    depth::Integer;
+    leaf_diameter::Real,
+    leaf_length::Real,
+    β::Real,
+    γ::Real=3,
+    cv_diameter=0,
+    cv_length=0,
+    diameter_distribution=nothing,
+    length_distribution=nothing,
+)
     depth ≥ 0 || throw(ArgumentError("depth must be ≥ 0, got $depth"))
     isfinite(γ) && γ > 0 || throw(ArgumentError("γ = $γ is the junction exponent and must be positive and finite"))
     isfinite(β) || throw(ArgumentError("β = $β is the length–diameter exponent and must be finite"))
@@ -121,11 +142,26 @@ function scaling_tree(rng::AbstractRNG, depth::Integer;
     (D_leaf, L_leaf) = (T(leaf_diameter), T(leaf_length))
     mean_diameter = map(g -> D_leaf * T(2)^((depth - g) / T(γ)), generation)
     mean_length = map(d -> L_leaf * (d / D_leaf)^T(β), mean_diameter)
-    len = mean_length .* _lognormal_factors(rng, _per_generation(T, cv_length, depth, :cv_length), generation)
-    diameter = mean_diameter .* _lognormal_factors(rng, _per_generation(T, cv_diameter, depth, :cv_diameter), generation)
+    len = mean_length .* _factors(rng, T, cv_length, length_distribution, depth, generation, :length)
+    diameter = mean_diameter .* _factors(rng, T, cv_diameter, diameter_distribution, depth, generation, :diameter)
     return ScalingTree{T}(parents, generation, diameter, len)
 end
 scaling_tree(depth::Integer; kwargs...) = scaling_tree(default_rng(), depth; kwargs...)
+
+# One factor per vessel about its generation's mean: a lognormal of the given CV, or a draw from
+# the given distribution when there is one.
+function _factors(rng::AbstractRNG, ::Type{T}, cv, ::Nothing, depth, generation, name) where {T}
+    return _lognormal_factors(rng, _per_generation(T, cv, depth, Symbol(:cv_, name)), generation)
+end
+function _factors(rng::AbstractRNG, ::Type{T}, cv, distribution, depth, generation, name) where {T}
+    all(iszero, cv) || throw(ArgumentError("give cv_$name or $(name)_distribution, not both"))
+    d = _per_generation(distribution, depth, Symbol(name, :_distribution))
+    return map(generation) do g
+        x = T(rand(rng, d[g+1]))
+        isfinite(x) && x > 0 || throw(ArgumentError("$(name)_distribution drew $x; a factor must be finite and positive"))
+        x
+    end
+end
 
 # One mean-one lognormal factor per vessel, whose coefficient of variation is exactly its
 # generation's `cv[g+1]`. A CV of zero everywhere draws nothing from `rng`.
@@ -138,9 +174,16 @@ end
 
 # A per-generation quantity as a vector of `depth + 1`, root first.
 _per_generation(::Type{T}, x::Real, depth, name) where {T} = fill(T(x), depth + 1)
-function _per_generation(::Type{T}, x::AbstractVector{<:Real}, depth, name) where {T}
+_per_generation(::Type{T}, x::AbstractVector{<:Real}, depth, name) where {T} = collect(T, _check_generations(x, depth, name))
+
+# A per-generation distribution likewise. A vector of numbers is one empirical distribution, not
+# one number per generation.
+_per_generation(d, depth, name) = fill(d, depth + 1)
+_per_generation(d::AbstractVector, depth, name) = eltype(d) <: Real ? fill(d, depth + 1) : _check_generations(d, depth, name)
+
+function _check_generations(x::AbstractVector, depth, name)
     length(x) == depth + 1 || throw(
         DimensionMismatch("a tree of depth $depth has $(depth + 1) generations, but $name has $(length(x)) entries"),
     )
-    return collect(T, x)
+    return x
 end

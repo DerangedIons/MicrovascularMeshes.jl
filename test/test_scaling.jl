@@ -46,3 +46,38 @@
         @test s isa ScalingTree{T}
     end
 end
+
+@testset "scaling_tree draws each generation's factors from its own distribution" begin
+    # Gamma(k, 1/k) has mean one and CV 1/√k, and its skew makes it unlike the lognormal the CV
+    # path draws. The leaves and the generation above them get different shapes so a
+    # root-first/leaf-first mix-up shows. Diameters keep the default lognormal CV path.
+    (depth, D_leaf, L_leaf, β) = (13, 30.0, 600.0, 1.2)
+    k = [fill(100.0, depth - 1); [4.0, 16.0]]
+    length_distribution = map(kᵢ -> Gamma(kᵢ, 1 / kᵢ), k)
+    build(seed) = scaling_tree(Xoshiro(seed), depth; leaf_diameter=D_leaf, leaf_length=L_leaf, β, cv_diameter=0.1, length_distribution)
+    t = build(7)
+    @test t.length == build(7).length && t.length != build(8).length
+
+    # Delta-method standard errors of the sample mean and sample CV of n Gamma(k, 1/k) draws.
+    average(x) = sum(x) / length(x)
+    sample_cv(x) = sqrt(sum(abs2, x .- average(x)) / (length(x) - 1)) / average(x)
+    se_cv(cv, n) = cv * sqrt((1 + cv^2) / (2n))
+    println("  scaling_tree($depth; length_distribution = Gamma(k, 1/k)), target → sample:")
+    for g in (depth-1):depth
+        is = findall(==(g), t.generation)
+        n = length(is)
+        L̄ = L_leaf * (D_leaf * 2.0^((depth - g) / 3) / D_leaf)^β
+        L = t.length[is]
+        cv = 1 / sqrt(k[g+1])
+        println(
+            "    level $g (n = $n, k = $(k[g+1])): L̄ $(round(L̄; digits=1)) → $(round(average(L); digits=1)) µm, ",
+            "cv_L $(round(cv; digits=3)) → $(round(sample_cv(L); digits=3))",
+        )
+        @test abs(average(L) / L̄ - 1) ≤ 4cv / sqrt(n)
+        @test abs(sample_cv(L) - cv) ≤ 4se_cv(cv, n)
+    end
+
+    # A Normal factor goes negative; that must fail loudly rather than yield a negative length.
+    @test_throws ArgumentError scaling_tree(Xoshiro(1), 8; leaf_diameter=30.0, leaf_length=600.0, β=1, length_distribution=Normal(1, 0.5))
+    @test_throws ArgumentError scaling_tree(1; leaf_diameter=30.0, leaf_length=600.0, β=1, cv_length=0.3, length_distribution=Gamma(4, 0.25))
+end
