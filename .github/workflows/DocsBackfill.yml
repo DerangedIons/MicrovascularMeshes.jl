@@ -13,7 +13,7 @@ concurrency:
 jobs:
   backfill:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 90
     env:
       # Secrets aren't readable in a step-level `if`, so surface presence here.
       HAS_APP_KEY: ${{ secrets.DERANGEDIONS_CI_APP_KEY != '' }}
